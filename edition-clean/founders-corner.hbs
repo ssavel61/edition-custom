@@ -1,0 +1,15 @@
+{{!< default}}
+
+<section class="container page-hero" style="margin-top:2rem;margin-bottom:2rem;">
+  <h1>Founder’s Corner</h1>
+  <p class="lead">Full access to the what, why, and how</p>
+  <p>Welcome to my journey—how I’m using AI to build a newsletter and educational ecosystem from scratch.</p>
+</section>
+
+<section class="container post-feed">
+  {{#foreach posts}}
+    {{> "post-card"}}
+  {{/foreach}}
+</section>
+
+{{pagination}}

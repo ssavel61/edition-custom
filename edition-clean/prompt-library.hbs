@@ -1,0 +1,15 @@
+{{!< default}}
+
+<section class="container page-hero" style="margin-top:2rem;margin-bottom:2rem;">
+  <h1>Prompt Library</h1>
+  <p class="lead">All my prompts — the good and the bad</p>
+  <p>Insights into the backbone of MindOverMoney.ai, and how my prompts evolved to generate the content you see.</p>
+</section>
+
+<section class="container post-feed">
+  {{#foreach posts}}
+    {{> "post-card"}}
+  {{/foreach}}
+</section>
+
+{{pagination}}
