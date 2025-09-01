@@ -4,20 +4,23 @@ on:
   push:
     branches: [ main, master ]
     paths:
-      - '**/*.hbs'
-      - 'partials/**'
-      - 'assets/**'
-      - 'locales/**'
-      - 'package.json'
+      - 'edition-clean/**'     # triggers when anything changes in your theme folder
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+
+      - name: Show repo structure (debug)
+        run: |
+          pwd
+          ls -la
+          ls -la edition-clean || true
+
       - name: Deploy Ghost Theme
         uses: TryGhost/action-deploy-theme@v1
         with:
           api-url: ${{ secrets.GHOST_ADMIN_API_URL }}
           api-key: ${{ secrets.GHOST_ADMIN_API_KEY }}
-          working-directory: edition-custom
+          working-directory: edition-clean     # <-- point to the folder that contains package.json
