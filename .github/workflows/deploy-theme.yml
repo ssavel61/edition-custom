@@ -4,7 +4,8 @@ on:
   push:
     branches: [ main, master ]
     paths:
-      - 'edition-clean/**'     # triggers when anything changes in your theme folder
+      - 'edition-clean/**'
+      - '.github/workflows/deploy-theme.yml'
 
 jobs:
   deploy:
@@ -12,15 +13,24 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      # Debug: show structure so we know the folder exists
       - name: Show repo structure (debug)
         run: |
           pwd
           ls -la
           ls -la edition-clean || true
 
+      # Create a zip of the theme folder
+      - name: Build theme zip
+        run: |
+          cd edition-clean
+          zip -r ../theme.zip . -x "node_modules/*" "**/.DS_Store" "**/__MACOSX/*"
+          cd ..
+
+      # Upload the zip to Ghost (no working-directory needed)
       - name: Deploy Ghost Theme
         uses: TryGhost/action-deploy-theme@v1
         with:
           api-url: ${{ secrets.GHOST_ADMIN_API_URL }}
           api-key: ${{ secrets.GHOST_ADMIN_API_KEY }}
-          working-directory: edition-clean     # <-- point to the folder that contains package.json
+          file: theme.zip
