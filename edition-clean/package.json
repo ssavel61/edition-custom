@@ -1,11 +1,11 @@
 {
     "name": "edition-custom",
     "description": "A clean, minimal newsletter theme for the Ghost publishing platform",
-    "version": "1.0.5",
+    "version": "1.0.6",
     "private": true,
-    "engines": {
-        "ghost": ">=5.0.0"
-    },
+    "engines": {"ghost": ">=5.0.0"},
+    "ghost-api": "v5"
+    }
     "license": "MIT",
     "author": {
         "name": "Ghost Foundation",
