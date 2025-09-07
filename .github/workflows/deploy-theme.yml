@@ -13,12 +13,18 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      # Debug: show structure so we know the folder exists
+      # Debug: list files so we can see the theme folder in logs
       - name: Show repo structure (debug)
         run: |
           pwd
           ls -la
           ls -la edition-clean || true
+          test -f edition-clean/package.json && echo "package.json found" || echo "package.json MISSING"
+
+      # Validate theme before deploy (prints human-readable errors if any)
+      - name: Validate theme with gscan (prints real errors)
+        run: |
+          npx -y gscan@latest --fatal --verbose edition-clean
 
       # Create a zip of the theme folder
       - name: Build theme zip
@@ -27,7 +33,7 @@ jobs:
           zip -r ../theme.zip . -x "node_modules/*" "**/.DS_Store" "**/__MACOSX/*"
           cd ..
 
-      # Upload the zip to Ghost (no working-directory needed)
+      # Upload the zip to Ghost
       - name: Deploy Ghost Theme
         uses: TryGhost/action-deploy-theme@v1
         with:
