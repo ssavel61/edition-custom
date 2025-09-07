@@ -4,20 +4,25 @@
 
   <header class="feed-header gh-canvas">
     <div class="feed-header-wrapper">
-      <h1 class="feed-header-title">Founder’s Corner</h1>
-      <p class="feed-header-desc">Full access to the what, why, and how</p>
-      <p class="feed-header-desc">Welcome to my journey—how I’m using AI to build a newsletter and educational ecosystem from scratch.</p>
+      {{#get "pages" filter="slug:founders-corner" limit="1"}}
+        {{#foreach pages}}
+          <h1 class="feed-header-title">{{title}}</h1>
+          {{#if custom_excerpt}}<p class="feed-header-desc">{{custom_excerpt}}</p>{{/if}}
+          {{{html}}}
+        {{/foreach}}
+      {{/get}}
     </div>
   </header>
 
-  <section class="gh-canvas">
-    <div class="gh-feed">
-      {{#foreach posts}}
-        {{> "loop"}}
-      {{/foreach}}
+  <section class="gh-section">
+    <div class="gh-container">
+      <div class="gh-feed">
+        {{#foreach posts}}
+          {{> "loop"}}
+        {{/foreach}}
+      </div>
+      {{pagination}}
     </div>
   </section>
-
-  {{pagination}}
 
 </main>
