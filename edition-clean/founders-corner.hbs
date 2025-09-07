@@ -1,8 +1,8 @@
 {{!< default}}
 
-<main class="site-main gh-canvas">
+<main class="site-main">
 
-  <header class="feed-header">
+  <header class="feed-header gh-canvas">
     <div class="feed-header-wrapper">
       <h1 class="feed-header-title">Founder’s Corner</h1>
       <p class="feed-header-desc">Full access to the what, why, and how</p>
@@ -10,27 +10,13 @@
     </div>
   </header>
 
-  <div class="post-feed gh-feed">
-    {{#foreach posts}}
-      <article class="{{post_class}}">
-        {{#if feature_image}}
-          <a class="post-card-image-link" href="{{url}}">
-            <img class="post-card-image" src="{{img_url feature_image}}" alt="{{title}}">
-          </a>
-        {{/if}}
-
-        <div class="post-card-content">
-          <h2 class="post-card-title"><a href="{{url}}">{{title}}</a></h2>
-
-          <div class="post-card-meta">
-            <time datetime="{{date format='YYYY-MM-DD'}}">{{date format="MMM D, YYYY"}}</time>
-          </div>
-
-          <p class="post-card-excerpt">{{excerpt words="24"}}</p>
-        </div>
-      </article>
-    {{/foreach}}
-  </div>
+  <section class="gh-canvas">
+    <div class="gh-feed">
+      {{#foreach posts}}
+        {{> "loop"}}
+      {{/foreach}}
+    </div>
+  </section>
 
   {{pagination}}
 
