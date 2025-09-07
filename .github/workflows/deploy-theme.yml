@@ -1,6 +1,9 @@
 name: Deploy Ghost Theme
 
+name: Deploy Ghost Theme
+
 on:
+  workflow_dispatch:        # ← enables the “Run workflow” button
   push:
     branches: [ main, master ]
     paths:
