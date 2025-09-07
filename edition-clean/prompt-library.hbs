@@ -2,26 +2,52 @@
 
 <main class="site-main template-prompts">
 
-  <!-- Editable hero pulled from the Page with slug "prompt-library" -->
-  <header class="feed-header gh-canvas">
-    <div class="feed-header-wrapper">
-      {{#get "pages" filter="slug:prompt-library" limit="1"}}
-        {{#foreach pages}}
-          <h1 class="feed-header-title">{{title}}</h1>
-          {{#if custom_excerpt}}<p class="feed-header-desc">{{custom_excerpt}}</p>{{/if}}
-          {{{html}}}
-        {{/foreach}}
-      {{/get}}
-    </div>
-  </header>
+  {{!-- Header matches other landing pages: title + optional excerpt only --}}
+  {{#get "pages" filter="slug:prompt-library" limit="1"}}
+    {{#foreach pages}}
+      <article class="article">
+        <header class="article-header gh-canvas">
+          <h1 class="article-title">{{title}}</h1>
+          {{#if custom_excerpt}}<p class="article-excerpt">{{custom_excerpt}}</p>{{/if}}
+        </header>
+      </article>
+    {{/foreach}}
+  {{/get}}
 
-  <!-- Narrow feed container for better card layout -->
+  {{!-- Local styles for this page only --}}
+  <style>
+    .template-prompts .article-header { margin-bottom: 2rem; }
+    .template-prompts .gh-canvas { max-width: 1000px; margin: 0 auto; }
+    .template-prompts .gh-feed {
+      display: grid; gap: 24px;
+      grid-template-columns: 1fr;
+    }
+    @media (min-width: 720px) {
+      .template-prompts .gh-feed { grid-template-columns: 1fr 1fr; }
+    }
+    .template-prompts .ngw-card { display:block; }
+    .template-prompts .ngw-thumb { display:block; overflow:hidden; border-radius:12px; }
+    .template-prompts .ngw-thumb img { width:100%; height: 200px; object-fit: cover; display:block; }
+    .template-prompts .ngw-title { margin:.75rem 0 .25rem; font-size: clamp(1.1rem, 1.8vw, 1.35rem); line-height:1.25; }
+    .template-prompts .ngw-meta { color: var(--midgrey); font-size:.875rem; margin-bottom:.25rem; }
+  </style>
+
+  {{!-- Narrow feed with thumbnail + title + one-line meta (no excerpts) --}}
   <section class="gh-canvas">
     <div class="gh-feed">
       {{#foreach posts}}
-        {{> "loop"}}
-      {{else}}
-        <div class="gh-canvas"><p>No prompts yet—add your first #prompt-library post.</p></div>
+        <article class="ngw-card">
+          {{#if feature_image}}
+            <a class="ngw-thumb" href="{{url}}">
+              <img src="{{img_url feature_image}}" alt="{{title}}">
+            </a>
+          {{/if}}
+
+          <h2 class="ngw-title"><a href="{{url}}">{{title}}</a></h2>
+          <div class="ngw-meta">
+            <time datetime="{{date format='YYYY-MM-DD'}}">{{date format="MMM D, YYYY"}}</time>{{#if reading_time}} · {{reading_time}}{{/if}}
+          </div>
+        </article>
       {{/foreach}}
     </div>
     {{pagination}}
