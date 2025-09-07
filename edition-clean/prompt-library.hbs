@@ -1,15 +1,37 @@
 {{!< default}}
 
-<section class="container page-hero" style="margin-top:2rem;margin-bottom:2rem;">
-  <h1>Prompt Library</h1>
-  <p class="lead">All my prompts — the good and the bad</p>
-  <p>Insights into the backbone of MindOverMoney.ai, and how my prompts evolved to generate the content you see.</p>
-</section>
+<main class="site-main gh-canvas">
 
-<section class="container post-feed">
-  {{#foreach posts}}
-    {{> "post-card"}}
-  {{/foreach}}
-</section>
+  <header class="feed-header">
+    <div class="feed-header-wrapper">
+      <h1 class="feed-header-title">Prompt Library</h1>
+      <p class="feed-header-desc">All my prompts — the good and the bad</p>
+      <p class="feed-header-desc">Insights into the backbone of MindOverMoney.ai, and how my prompts evolved to generate the content you see.</p>
+    </div>
+  </header>
 
-{{pagination}}
+  <div class="post-feed gh-feed">
+    {{#foreach posts}}
+      <article class="{{post_class}}">
+        {{#if feature_image}}
+          <a class="post-card-image-link" href="{{url}}">
+            <img class="post-card-image" src="{{img_url feature_image}}" alt="{{title}}">
+          </a>
+        {{/if}}
+
+        <div class="post-card-content">
+          <h2 class="post-card-title"><a href="{{url}}">{{title}}</a></h2>
+
+          <div class="post-card-meta">
+            <time datetime="{{date format='YYYY-MM-DD'}}">{{date format="MMM D, YYYY"}}</time>
+          </div>
+
+          <p class="post-card-excerpt">{{excerpt words="24"}}</p>
+        </div>
+      </article>
+    {{/foreach}}
+  </div>
+
+  {{pagination}}
+
+</main>
