@@ -1,7 +1,8 @@
 {{!< default}}
 
-<main class="site-main">
+<main class="site-main template-founders">
 
+  <!-- Editable hero pulled from the Page with slug "founders-corner" -->
   <header class="feed-header gh-canvas">
     <div class="feed-header-wrapper">
       {{#get "pages" filter="slug:founders-corner" limit="1"}}
@@ -14,15 +15,16 @@
     </div>
   </header>
 
-  <section class="gh-section">
-    <div class="gh-container">
-      <div class="gh-feed">
-        {{#foreach posts}}
-          {{> "loop"}}
-        {{/foreach}}
-      </div>
-      {{pagination}}
+  <!-- Narrow feed container for better card layout -->
+  <section class="gh-canvas">
+    <div class="gh-feed">
+      {{#foreach posts}}
+        {{> "loop"}}
+      {{else}}
+        <div class="gh-canvas"><p>No posts here yet—first entry coming soon.</p></div>
+      {{/foreach}}
     </div>
+    {{pagination}}
   </section>
 
 </main>
