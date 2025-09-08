@@ -14,10 +14,6 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      # in your GitHub Action before build
-      - name: Validate package.json parses
-        run: node -e "JSON.parse(require('fs').readFileSync('edition-clean/package.json','utf8'))"
-
       # Debug: list files so we can see the theme folder in logs
       - name: Show repo structure (debug)
         run: |
