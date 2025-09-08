@@ -1,7 +1,8 @@
 {{!< default}}
 
 <main class="site-main template-prompts">
-  {{!-- Pull the editable Page content (slug must match your Page) --}}
+
+  {{!-- Pull the editable Page by slug and render title, optional excerpt, hero image, and full body --}}
   {{#get "pages" filter="slug:prompt-library" limit="1"}}
     {{#foreach pages}}
       <article class="article">
@@ -10,14 +11,12 @@
           {{#if custom_excerpt}}<p class="article-excerpt">{{custom_excerpt}}</p>{{/if}}
         </header>
 
-        {{!-- Show the Page’s feature image as the hero (you said you want this) --}}
         {{#if feature_image}}
           <figure class="article-image gh-canvas">
             <img src="{{img_url feature_image}}" alt="{{title}}">
           </figure>
         {{/if}}
 
-        {{!-- Show full body of the Page, not just the excerpt --}}
         <section class="gh-content gh-canvas">
           {{{html}}}
         </section>
@@ -25,40 +24,52 @@
     {{/foreach}}
   {{/get}}
 
-  {{!-- Local, page-only CSS to make clean thumbnails & spacing --}}
+  {{!-- Page-local CSS: true thumbnail list, tidy grid, consistent width --}}
   <style>
+    :root { --ngw-thumb-h: 180px; } /* change to 160px/200px if you prefer */
+
     .template-prompts .article-header { margin-bottom: 1.5rem; }
     .template-prompts .gh-canvas { max-width: 1000px; margin: 0 auto; }
-    .template-prompts .gh-feed {
+
+    .template-prompts .ngw-grid {
+      list-style: none; margin: 0; padding: 0;
       display: grid; gap: 24px; grid-template-columns: 1fr;
     }
-    @media (min-width: 720px) {
-      .template-prompts .gh-feed { grid-template-columns: 1fr 1fr; }
+    @media (min-width: 720px){
+      .template-prompts .ngw-grid { grid-template-columns: 1fr 1fr; }
     }
-    .template-prompts .ngw-card { display:block; }
+
+    .template-prompts .ngw-card { display: block; }
     .template-prompts .ngw-thumb { display:block; overflow:hidden; border-radius:12px; }
-    .template-prompts .ngw-thumb img { width:100%; height:200px; object-fit:cover; display:block; }
-    .template-prompts .ngw-title { margin:.75rem 0 .25rem; font-size:clamp(1.1rem,1.8vw,1.35rem); line-height:1.25; }
-    .template-prompts .ngw-meta { color:var(--midgrey); font-size:.875rem; margin-bottom:.25rem; }
+    .template-prompts .ngw-thumb img {
+      width:100%; height: var(--ngw-thumb-h); object-fit: cover; display:block;
+    }
+    .template-prompts .ngw-title {
+      margin:.75rem 0 .25rem; line-height:1.25;
+      font-size: clamp(1.1rem, 1.8vw, 1.35rem);
+    }
+    .template-prompts .ngw-meta { color: var(--midgrey); font-size:.875rem; }
   </style>
 
-  {{!-- Post list: small thumbnail + title + date/reading time (no body verbiage) --}}
+  {{!-- Post list: thumbnail + title + date (no long verbiage) --}}
   <section class="gh-canvas">
-    <div class="gh-feed">
+    <ul class="ngw-grid">
       {{#foreach posts}}
-        <article class="ngw-card">
+        <li class="ngw-card">
           {{#if feature_image}}
             <a class="ngw-thumb" href="{{url}}">
-              <img src="{{img_url feature_image}}" alt="{{title}}">
+              <img src="{{img_url feature_image size='m'}}"
+                   width="600" height="338" loading="lazy" decoding="async" alt="{{title}}">
             </a>
           {{/if}}
+
           <h2 class="ngw-title"><a href="{{url}}">{{title}}</a></h2>
           <div class="ngw-meta">
             <time datetime="{{date format='YYYY-MM-DD'}}">{{date format="MMM D, YYYY"}}</time>{{#if reading_time}} · {{reading_time}}{{/if}}
           </div>
-        </article>
+        </li>
       {{/foreach}}
-    </div>
+    </ul>
     {{pagination}}
   </section>
 </main>
