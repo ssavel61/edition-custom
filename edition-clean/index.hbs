@@ -1,23 +1,25 @@
-{{!< default}}
-
-<main class="site-main">
-
-    <header class="feed-header gh-canvas">
-        {{#if @custom.feed_title}}
-            <div class="feed-header-wrapper">
-                <h2 class="feed-header-title">{{@custom.feed_title}}</h2>
-            </div>
-        {{/if}}
-    </header>
-
-    <div class="post-feed{{#match @custom.feed_layout "!=" "Minimal"}} expanded{{/match}}{{#match @custom.feed_layout "Right thumbnail"}} right-thumbnail{{/match}}{{#match @custom.feed_layout "Text-only"}} text-only{{/match}} gh-feed gh-canvas">
-        {{#foreach posts}}
-            {{> "loop"}}
-        {{/foreach}}
-    </div>
-
-    {{pagination}}
-
-</main>
-
-{{#contentFor "body_class"}}{{#if @site.cover_image}} with-full-cover is-head-transparent{{/if}}{{#if @member}} logged-in{{/if}}{{/contentFor}}
+ {{!< default}}
+ 
+ <main class="site-main">
+ 
+     <header class="feed-header gh-canvas">
+         {{#if @custom.feed_title}}
+             <div class="feed-header-wrapper">
+                 <h2 class="feed-header-title">{{@custom.feed_title}}</h2>
+             </div>
+         {{/if}}
+     </header>
+ 
+     <div class="post-feed{{#match @custom.feed_layout "!=" "Minimal"}} expanded{{/match}}{{#match @custom.feed_layout "Right thumbnail"}} right-thumbnail{{/match}}{{#match @custom.feed_layout "Text-only"}} text-only{{/match}} gh-feed gh-canvas">
+         {{#get "posts" filter="tag:-prompt-library+tag:-founders-corner" limit=@config.posts_per_page page=page include="authors,tags"}}
+             {{#foreach posts}}
+                 {{> "loop"}}
+             {{/foreach}}
+         {{/get}}
+     </div>
+ 
+     {{pagination}}
+ 
+ </main>
+ 
+ {{#contentFor "body_class"}}{{#if @site.cover_image}} with-full-cover is-head-transparent{{/if}}{{#if @member}} logged-in{{/if}}{{/contentFor}}
