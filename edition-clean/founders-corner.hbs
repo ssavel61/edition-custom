@@ -26,17 +26,18 @@
 
   {{!-- Page-local CSS: true thumbnail list, tidy grid, consistent width --}}
   <style>
-    :root { --ngw-thumb-h: 180px; } /* change to 160px/200px if you prefer */
+    :root { --ngw-thumb-h: 180px; }
 
     .template-founders .article-header { margin-bottom: 1.5rem; }
     .template-founders .gh-canvas { max-width: 1000px; margin: 0 auto; }
 
     .template-founders .ngw-grid {
-      list-style: none; margin: 0; padding: 0;
-      display: grid; gap: 24px; grid-template-columns: 1fr;
-    }
-    @media (min-width: 720px){
-      .template-founders .ngw-grid { grid-template-columns: 1fr 1fr; }
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      display: grid;
+      gap: 24px;
+      grid-template-columns: 1fr;          /* single column on all screens */
     }
 
     .template-founders .ngw-card { display: block; }
@@ -54,11 +55,10 @@
   {{!-- Post list: thumbnail + title + date (no long verbiage) --}}
   <section class="gh-canvas">
     <ul class="ngw-grid">
-      {{#foreach posts}}
+      {{#foreach posts order="published_at desc"}}
         <li class="ngw-card">
           {{#if feature_image}}
             <a class="ngw-thumb" href="{{url}}">
-              {{!-- load a smaller source to guarantee small visuals --}}
               <img src="{{img_url feature_image size='m'}}"
                    width="600" height="338" loading="lazy" decoding="async" alt="{{title}}">
             </a>
