@@ -5,7 +5,7 @@ var st = 0;
 
 cover();
 featured();
-pagination(false);
+pagination(true);
 
 window.addEventListener('scroll', function () {
     'use strict';
