@@ -81,7 +81,9 @@
             </div>
             {{#if @site.secondary_navigation}}
                 <nav class="gh-foot-menu">
-                    {{navigation type="secondary"}}
+                    {{#foreach @site.secondary_navigation}}
+                        <a href="{{url}}"{{#if (match label "(^X$|^TikTok$)")}} target="_blank" rel="noopener noreferrer"{{/if}}>{{label}}</a>
+                    {{/foreach}}
                 </nav>
             {{/if}}
             <div class="gh-powered-by">
