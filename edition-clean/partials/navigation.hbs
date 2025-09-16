@@ -1,7 +1,7 @@
 <ul class="nav">
     {{#foreach navigation}}
         <li class="nav-{{slug}}{{#if current}} nav-current{{/if}}">
-                        <a href="{{url}}" {{#if (or (match url "x\\.com") (match url "tiktok\\.com"))}}target="_blank" rel="noopener noreferrer"{{/if}}>{{label}}</a>
+                        <a href="{{url}}" {{#match url "(x\\.com|tiktok\\.com)"}}target="_blank" rel="noopener noreferrer"{{/match}}>{{label}}</a>
         </li>
     {{/foreach}}
 </ul>
