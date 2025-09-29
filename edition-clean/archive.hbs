@@ -1,0 +1,77 @@
+{{!< default}}
+
+<main class="site-main template-archive">
+
+  {{!-- Pull the editable Page by slug and render title, optional excerpt, hero image, and full body --}}
+  {{#get "pages" filter="slug:archive" limit="1"}}
+    {{#foreach pages}}
+      <article class="article">
+        <header class="article-header gh-canvas" style="text-align:center;">
+          <h1 class="article-title">{{title}}</h1>
+          {{#if custom_excerpt}}<p class="article-excerpt">{{custom_excerpt}}</p>{{/if}}
+        </header>
+
+        {{#if feature_image}}
+          <figure class="article-image gh-canvas">
+            <img src="{{img_url feature_image}}" alt="{{title}}">
+          </figure>
+        {{/if}}
+
+        <section class="gh-content gh-canvas">
+          {{{html}}}
+        </section>
+      </article>
+    {{/foreach}}
+  {{/get}}
+
+  {{!-- Page-local CSS: true thumbnail list, tidy grid, consistent width --}}
+  <style>
+    :root { --ngw-thumb-h: 180px; }
+
+    .template-archive .article-header { margin-bottom: 1.5rem; }
+    .template-archive .gh-canvas { max-width: 1000px; margin: 0 auto; }
+
+    .template-archive .ngw-grid {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      display: grid;
+      gap: 24px;
+      grid-template-columns: 1fr;          /* single column on all screens */
+    }
+
+    .template-archive .ngw-card { display: block; }
+    .template-archive .ngw-thumb { display:block; overflow:hidden; border-radius:12px; }
+    .template-archive .ngw-thumb img {
+      width:100%; height: var(--ngw-thumb-h); object-fit: cover; display:block;
+    }
+    .template-archive .ngw-title {
+      margin:.75rem 0 .25rem; line-height:1.25;
+      font-size: clamp(1.25rem, 2.4vw, 1.6rem);
+    }
+    .template-archive .ngw-meta { color: var(--midgrey); font-size:.875rem; }
+  </style>
+
+  {{!-- Post list: thumbnail + title + date (no long verbiage) --}}
+  <section class="gh-canvas">
+    <ul class="ngw-grid">
+      {{#foreach posts order="published_at desc"}}
+        <li class="ngw-card">
+          {{#if feature_image}}
+            <a class="ngw-thumb" href="{{url}}">
+              <img src="{{img_url feature_image size='m'}}"
+                   width="600" height="338" loading="lazy" decoding="async" alt="{{title}}">
+            </a>
+          {{/if}}
+
+          <h2 class="ngw-title"><a href="{{url}}">{{title}}</a></h2>
+          <div class="ngw-meta">
+            <time datetime="{{date format='YYYY-MM-DD'}}">{{date format="MMM D, YYYY"}}</time>{{#if reading_time}} · {{reading_time}}{{/if}}
+          </div>
+        </li>
+      {{/foreach}}
+    </ul>
+    {{pagination}}
+  </section>
+</main>
+  
