@@ -1,7 +1,6 @@
 <nav class="pagination" aria-label="Pagination">
     <div id="infinite-scroll-marker"></div>
     {{#if next}}
-        {{!-- The JavaScript uses this hidden link to know what URL to fetch next --}}
-        <a class="older-posts" href="{{page_url next}}" style="display:none;"></a>
+        <a class="older-posts" href="{{page_url next}}" style="display:none;">Older Posts</a>
     {{/if}}
 </nav>
