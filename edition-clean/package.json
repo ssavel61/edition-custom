@@ -1,6 +1,6 @@
 {
   "name": "edition-clean",                     // keep EXACTLY your current theme name
-  "version": "1.0.40",                         // bump each deploy (X.Y.Z semver)
+  "version": "1.0.41",                         // bump each deploy (X.Y.Z semver)
   "author": { "email": "admin@mindovermoney.ai" },
   "engines": { "ghost": ">=5.0.0" },
   "license": "MIT",
