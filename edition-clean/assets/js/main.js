@@ -74,3 +74,76 @@ function featured() {
         },
     });
 }
+function pagination(isInfinite) {
+    var feed = document.querySelector('.gh-feed');
+    var nav = document.querySelector('.pagination');
+    var next = document.querySelector('link[rel="next"]');
+    var loadMore = document.querySelector('.older-posts');
+    var marker = document.querySelector('#infinite-scroll-marker');
+
+    if (!feed || !nav || !marker) return;
+
+    if (loadMore) {
+        nav.style.display = 'block';
+    }
+
+    function fetchNextPage() {
+        var nextLink = document.querySelector('link[rel="next"]');
+        if (!nextLink) return;
+
+        var url = nextLink.getAttribute('href');
+        if (loading === true) return;
+
+        nav.classList.add('loading');
+        loading = true;
+
+        var xhr = new XMLHttpRequest();
+        xhr.open('GET', url);
+        xhr.responseType = 'document';
+
+        xhr.onload = function () {
+            if (xhr.status >= 200 && xhr.status < 400) {
+                var newNodes = xhr.response.querySelectorAll('.gh-feed > *');
+                var nextLinkUrl = xhr.response.querySelector('link[rel="next"]');
+
+                newNodes.forEach(function (node) {
+                    feed.appendChild(document.importNode(node, true));
+                });
+
+                if (nextLinkUrl) {
+                    nextLink.setAttribute('href', nextLinkUrl.getAttribute('href'));
+                } else {
+                    // No more pages
+                    window.removeEventListener('scroll', onScroll);
+                    if (marker) marker.remove();
+                    nav.remove();
+                }
+
+                nav.classList.remove('loading');
+                loading = false;
+            }
+        };
+
+        xhr.send();
+    }
+
+    var loading = false;
+
+    if (isInfinite) {
+        var observer = new IntersectionObserver(function (entries) {
+            entries.forEach(function (entry) {
+                if (entry.isIntersecting) {
+                    fetchNextPage();
+                }
+            });
+        });
+
+        observer.observe(marker);
+    } else {
+        // Fallback for load more button if infinite scroll is off
+        loadMore.addEventListener('click', function (e) {
+            e.preventDefault();
+            fetchNextPage();
+        });
+    }
+}
