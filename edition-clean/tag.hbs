@@ -12,7 +12,13 @@
         {{/if}}
 
         <header class="single-header gh-canvas">
-            <h1 class="single-title">{{name}}</h1>
+            <h1 class="single-title">
+                {{#match slug "newsletter"}}
+                    Neural Gains Weekly Archive
+                {{else}}
+                    {{name}}
+                {{/match}}
+            </h1>
             {{#if description}}
                 <div class="single-excerpt">{{description}}</div>
             {{/if}}
