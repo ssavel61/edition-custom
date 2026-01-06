@@ -1,6 +1,6 @@
 {
   "name": "edition-clean",
-  "version": "1.0.49",
+  "version": "1.0.50",
   "author": { "email": "admin@mindovermoney.ai" },
   "engines": { "ghost": ">=5.0.0" },
   "license": "MIT",
@@ -23,6 +23,11 @@
         "type": "text",
         "group": "homepage",
         "default": "Featured"
+      },
+      "show_featured_posts": {
+        "type": "boolean",
+        "group": "homepage",
+        "default": true
       },
       "title_font": {
         "type": "select",
