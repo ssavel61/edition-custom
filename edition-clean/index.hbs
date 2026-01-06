@@ -10,23 +10,28 @@
         {{/if}}
     </header>
 
-    {{!-- Custom text-only layout: No image placeholders, just clean content --}}
     <div class="post-feed gh-feed gh-canvas">
         {{#get "posts" limit="3" include="authors,tags" order="published_at desc"}}
             {{#foreach posts}}
-                <article class="feed {{post_class}}">
-                    <div class="feed-wrapper" style="grid-template-columns: 1fr;">
-                        <h2 class="feed-title" style="margin-bottom: 8px;">{{title}}</h2>
+                <article class="feed {{post_class}}" style="margin-bottom: 48px; border-bottom: 1px solid var(--ghost-accent-color); padding-bottom: 24px;">
+                    <div class="feed-wrapper" style="display: block;">
+                        <h2 class="feed-title" style="margin: 0 0 12px 0; font-size: 2.8rem; line-height: 1.2;">{{title}}</h2>
                         
                         {{#if excerpt}}
-                            <div class="feed-excerpt" style="margin-bottom: 12px; color: var(--secondary-text-color); font-size: 1.5rem; line-height: 1.5;">
-                                {{excerpt words="25"}}...
-                            </div>
+                            <p class="feed-excerpt" style="margin-bottom: 16px; color: var(--secondary-text-color); font-size: 1.6rem; line-height: 1.6; opacity: 0.9;">
+                                {{excerpt words="30"}}...
+                            </p>
                         {{/if}}
 
-                        <time class="feed-date" datetime="{{date format="YYYY-MM-DD"}}">
-                            {{date format="MMMM D, YYYY"}}
-                        </time>
+                        <div class="feed-right" style="display: flex; gap: 15px; align-items: center; font-size: 1.3rem; color: var(--secondary-text-color); font-weight: 500; text-transform: uppercase; letter-spacing: 0.5px;">
+                            <time class="feed-date" datetime="{{date format="YYYY-MM-DD"}}">
+                                {{date format="MMMM D, YYYY"}}
+                            </time>
+                            <span class="feed-length">{{reading_time}}</span>
+                            {{#if primary_tag}}
+                                <span class="feed-tag" style="color: var(--ghost-accent-color);">{{primary_tag.name}}</span>
+                            {{/if}}
+                        </div>
                     </div>
                     <a class="u-permalink" href="{{url}}" aria-label="{{title}}"></a>
                 </article>
