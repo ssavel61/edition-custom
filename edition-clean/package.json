@@ -1,6 +1,6 @@
 {
   "name": "edition-clean",
-  "version": "1.0.47",
+  "version": "1.0.48",
   "author": { "email": "admin@mindovermoney.ai" },
   "engines": { "ghost": ">=5.0.0" },
   "license": "MIT",
@@ -23,6 +23,17 @@
         "type": "text",
         "group": "homepage",
         "default": "Featured"
+      },
+      "title_font": {
+        "type": "select",
+        "group": "site",
+        "options": ["Modern sans-serif", "Elegant serif"],
+        "default": "Modern sans-serif"
+      },
+      "email_signup_text": {
+        "type": "text",
+        "group": "site",
+        "default": "Sign up for more"
       },
       "show_related_posts": {
         "type": "boolean",
