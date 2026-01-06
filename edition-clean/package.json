@@ -1,6 +1,6 @@
 {
   "name": "edition-clean",
-  "version": "1.0.51",
+  "version": "1.0.52",
   "author": { "email": "admin@mindovermoney.ai" },
   "engines": { "ghost": ">=5.0.0" },
   "license": "MIT",
@@ -44,7 +44,7 @@
       "email_signup_text": {
         "type": "text",
         "group": "site",
-        "default": "Sign up for more"
+        "default": "Financial freedom through mindset, education and technology"
       },
       "show_related_posts": {
         "type": "boolean",
