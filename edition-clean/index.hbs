@@ -2,6 +2,35 @@
 
 {{!-- Homepage-specific styles --}}
 <style>
+  /* ===== HOMEPAGE NAV MERGE ===== */
+  /* Make nav seamless with hero on homepage */
+  body.home-template .gh-head {
+    background: #2c353c !important;
+    border-bottom: none !important;
+  }
+  body.home-template .gh-head a {
+    color: rgba(255,255,255,0.85) !important;
+  }
+  body.home-template .gh-head a:hover {
+    color: #f3e2ae !important;
+  }
+  body.home-template .gh-head-actions .gh-button {
+    color: #2c353c !important;
+    background: #f3e2ae !important;
+    border-color: #f3e2ae !important;
+  }
+  body.home-template .gh-head-actions .gh-button:hover {
+    background: #e8d49a !important;
+    border-color: #e8d49a !important;
+  }
+  body.home-template .gh-head-logo,
+  body.home-template .gh-head-logo a {
+    color: #fff !important;
+  }
+  body.home-template .gh-search {
+    color: rgba(255,255,255,0.85) !important;
+  }
+
   /* ===== HOMEPAGE LAYOUT ===== */
   .ngw-home .site-content { padding: 0 !important; }
 
@@ -433,19 +462,19 @@
         <div class="ngw-value-card">
           <div class="ngw-value-icon">📚</div>
           <h3>Learn AI Concepts</h3>
-          <p>A progressive curriculum that builds your AI fluency from the ground up. No jargon, no prerequisites. Just clear explanations that connect to your actual work.</p>
+          <p>Each issue unpacks one AI concept with zero jargon. No CS degree required. Just clear explanations tied to real work scenarios you'll recognize from your own week.</p>
         </div>
 
         <div class="ngw-value-card">
           <div class="ngw-value-icon">⚡</div>
           <h3>Steal Real Prompts</h3>
-          <p>The exact prompts I use every week with full context, the model I used, and an honest breakdown of what worked and what failed. No theory. Just receipts.</p>
+          <p>The exact prompts I use every week. The model, the context, what worked, what didn't. Copy them. Tweak them. Ship them. No theory. Just receipts.</p>
         </div>
 
         <div class="ngw-value-card">
           <div class="ngw-value-icon">🛠️</div>
           <h3>Build Alongside Me</h3>
-          <p>A non-technical professional documenting the entire AI building journey in public. The wins, the failures, and the workflows you can use immediately.</p>
+          <p>A non-technical professional building with AI in public. Every win, every failure, every workflow documented. You skip the mistakes. You keep the shortcuts.</p>
         </div>
 
       </div>
@@ -468,9 +497,9 @@
                   <img class="ngw-featured-img" src="{{img_url feature_image size='m'}}" alt="{{title}}" loading="lazy">
                 {{/if}}
                 <div class="ngw-featured-body">
-                  <div class="ngw-featured-tag">The Big Picture</div>
+                  <div class="ngw-featured-tag">Newsletter</div>
                   <h3>{{title}}</h3>
-                  <p>{{excerpt words="20"}}</p>
+                  <p>AI is getting personal. The next wave isn't smarter answers. It's tools that learn who you are, how you work, and what you need before you ask.</p>
                 </div>
               </a>
             </div>
@@ -488,7 +517,7 @@
                 <div class="ngw-featured-body">
                   <div class="ngw-featured-tag">Founder's Corner</div>
                   <h3>{{title}}</h3>
-                  <p>{{excerpt words="20"}}</p>
+                  <p>Silicon Valley hit a wall. More compute isn't the answer anymore. The real unlock? The context only you can provide. Here's why that changes everything.</p>
                 </div>
               </a>
             </div>
@@ -504,9 +533,9 @@
                   <img class="ngw-featured-img" src="{{img_url feature_image size='m'}}" alt="{{title}}" loading="lazy">
                 {{/if}}
                 <div class="ngw-featured-body">
-                  <div class="ngw-featured-tag">Prompt Library</div>
+                  <div class="ngw-featured-tag">Steal My Prompt</div>
                   <h3>{{title}}</h3>
-                  <p>{{excerpt words="20"}}</p>
+                  <p>The production prompt behind this volume with full context, the model I used, and exactly what I changed. Steal it. Break it. Make it yours.</p>
                 </div>
               </a>
             </div>
