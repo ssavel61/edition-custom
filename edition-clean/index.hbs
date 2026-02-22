@@ -104,7 +104,7 @@
   /* ===== VALUE PROP BOXES ===== */
   .ngw-value {
     padding: 6vmin 4vmin;
-    background: var(--white-color, #fff);
+    background: #eef3f4;
   }
   .ngw-value-inner {
     max-width: 1000px;
@@ -115,7 +115,7 @@
     font-size: clamp(1.8rem, 3vw, 2.4rem);
     font-weight: 800;
     margin: 0 0 3rem;
-    color: var(--primary-text-color);
+    color: #2c353c;
   }
   .ngw-value-grid {
     display: grid;
@@ -125,11 +125,13 @@
   .ngw-value-card {
     padding: 2.4rem 2rem;
     border-radius: 10px;
-    border: 1px solid var(--light-gray-color, #e6e6e6);
+    background: #fff;
+    border: 1px solid #d5dee0;
+    border-top: 3px solid #8abfc5;
     transition: box-shadow 0.2s, transform 0.2s;
   }
   .ngw-value-card:hover {
-    box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+    box-shadow: 0 6px 24px rgba(44,53,60,0.10);
     transform: translateY(-2px);
   }
   .ngw-value-icon {
@@ -140,12 +142,12 @@
     font-size: 1.7rem;
     font-weight: 700;
     margin: 0 0 0.8rem;
-    color: var(--primary-text-color);
+    color: #2c353c;
   }
   .ngw-value-card p {
     font-size: 1.4rem;
     line-height: 1.6;
-    color: var(--secondary-text-color);
+    color: #5a6872;
     margin: 0;
   }
 
@@ -159,7 +161,7 @@
   /* ===== FEATURED CONTENT ===== */
   .ngw-featured {
     padding: 6vmin 4vmin;
-    background: #f8f9fa;
+    background: #fff;
   }
   .ngw-featured-inner {
     max-width: 1000px;
@@ -170,12 +172,12 @@
     font-size: clamp(1.8rem, 3vw, 2.4rem);
     font-weight: 800;
     margin: 0 0 1rem;
-    color: var(--primary-text-color);
+    color: #2c353c;
   }
   .ngw-featured-sub {
     text-align: center;
     font-size: 1.5rem;
-    color: var(--secondary-text-color);
+    color: #5a6872;
     margin: 0 0 3rem;
   }
   .ngw-featured-grid {
@@ -187,13 +189,13 @@
     background: #fff;
     border-radius: 10px;
     overflow: hidden;
-    border: 1px solid var(--light-gray-color, #e6e6e6);
+    border: 1px solid #d5dee0;
     transition: box-shadow 0.2s, transform 0.2s;
     display: flex;
     flex-direction: column;
   }
   .ngw-featured-card:hover {
-    box-shadow: 0 6px 24px rgba(0,0,0,0.08);
+    box-shadow: 0 6px 24px rgba(44,53,60,0.10);
     transform: translateY(-2px);
   }
   .ngw-featured-card a {
@@ -228,12 +230,12 @@
     font-weight: 700;
     line-height: 1.3;
     margin: 0 0 0.6rem;
-    color: var(--primary-text-color);
+    color: #2c353c;
   }
   .ngw-featured-card p {
     font-size: 1.3rem;
     line-height: 1.5;
-    color: var(--secondary-text-color);
+    color: #5a6872;
     margin: 0;
     flex: 1;
   }
@@ -248,7 +250,7 @@
   /* ===== ABOUT SECTION ===== */
   .ngw-about {
     padding: 6vmin 4vmin;
-    background: var(--white-color, #fff);
+    background: #2c353c;
   }
   .ngw-about-inner {
     max-width: 800px;
@@ -269,18 +271,18 @@
     font-size: 2rem;
     font-weight: 800;
     margin: 0 0 1rem;
-    color: var(--primary-text-color);
+    color: #fff;
   }
   .ngw-about-text p {
     font-size: 1.5rem;
     line-height: 1.7;
-    color: var(--secondary-text-color);
+    color: rgba(255,255,255,0.75);
     margin: 0 0 1.2rem;
   }
   .ngw-about-link {
     font-size: 1.4rem;
     font-weight: 600;
-    color: #8abfc5;
+    color: #f3e2ae;
     text-decoration: none;
   }
   .ngw-about-link:hover {
@@ -297,7 +299,7 @@
   /* ===== LATEST ISSUES ===== */
   .ngw-latest {
     padding: 6vmin 4vmin;
-    background: #f8f9fa;
+    background: #eef3f4;
   }
   .ngw-latest-inner {
     max-width: 800px;
@@ -308,7 +310,7 @@
     font-weight: 800;
     margin: 0 0 2.5rem;
     text-align: center;
-    color: var(--primary-text-color);
+    color: #2c353c;
   }
   .ngw-latest-list {
     list-style: none;
@@ -320,15 +322,15 @@
     justify-content: space-between;
     align-items: baseline;
     padding: 1.4rem 0;
-    border-bottom: 1px solid var(--light-gray-color, #e6e6e6);
+    border-bottom: 1px solid #d0d8db;
   }
   .ngw-latest-item:first-child {
-    border-top: 1px solid var(--light-gray-color, #e6e6e6);
+    border-top: 1px solid #d0d8db;
   }
   .ngw-latest-item a {
     font-size: 1.6rem;
     font-weight: 600;
-    color: var(--primary-text-color);
+    color: #2c353c;
     text-decoration: none;
     flex: 1;
     margin-right: 1rem;
@@ -339,7 +341,7 @@
   }
   .ngw-latest-date {
     font-size: 1.3rem;
-    color: var(--secondary-text-color);
+    color: #5a6872;
     white-space: nowrap;
     flex-shrink: 0;
   }
@@ -484,7 +486,7 @@
                   <img class="ngw-featured-img" src="{{img_url feature_image size='m'}}" alt="{{title}}" loading="lazy">
                 {{/if}}
                 <div class="ngw-featured-body">
-                  <div class="ngw-featured-tag">Thought Leadership</div>
+                  <div class="ngw-featured-tag">Founder's Corner</div>
                   <h3>{{title}}</h3>
                   <p>{{excerpt words="20"}}</p>
                 </div>
@@ -517,7 +519,7 @@
   {{!-- ===== ABOUT SECTION ===== --}}
   <section class="ngw-about">
     <div class="ngw-about-inner">
-      {{#get "authors" filter="slug:santosh" limit="1"}}
+      {{#get "users" filter="slug:santosh" limit="1"}}
         {{#foreach users}}
           {{#if profile_image}}
             <img class="ngw-about-photo" src="{{img_url profile_image size='m'}}" alt="{{name}}" loading="lazy">
