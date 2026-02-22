@@ -517,7 +517,7 @@
   {{!-- ===== ABOUT SECTION ===== --}}
   <section class="ngw-about">
     <div class="ngw-about-inner">
-      {{#get "users" filter="slug:santosh" limit="1"}}
+      {{#get "authors" filter="slug:santosh" limit="1"}}
         {{#foreach users}}
           {{#if profile_image}}
             <img class="ngw-about-photo" src="{{img_url profile_image size='m'}}" alt="{{name}}" loading="lazy">
