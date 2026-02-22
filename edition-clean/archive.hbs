@@ -2,29 +2,11 @@
 
 <main class="site-main template-archive">
 
-  {{!-- Pull the editable Page by slug --}}
-  {{#get "pages" filter="slug:archive" limit="1"}}
-    {{#foreach pages}}
-      <article class="article">
-        <header class="archive-header gh-canvas">
-          <h1 class="archive-title">{{title}}</h1>
-          {{#if custom_excerpt}}<p class="archive-excerpt">{{custom_excerpt}}</p>{{/if}}
-        </header>
-
-        {{#if html}}
-          <section class="gh-content gh-canvas archive-body">
-            {{{html}}}
-          </section>
-        {{/if}}
-      </article>
-    {{/foreach}}
-  {{/get}}
-
   {{!-- Page styles --}}
   <style>
-    /* Reset page template spacing */
+    /* Top spacing fix */
     .template-archive .site-content {
-      padding-top: max(4vmin, 2rem) !important;
+      padding-top: max(6vmin, 3rem) !important;
     }
 
     /* Header */
@@ -40,7 +22,7 @@
       font-weight: 800;
       letter-spacing: -0.02em;
       margin: 0 0 0.8rem;
-      color: var(--primary-text-color);
+      color: #2c353c;
     }
     .archive-excerpt {
       font-size: 1.5rem;
@@ -183,6 +165,24 @@
     }
   </style>
 
+  {{!-- Pull the editable Page by slug --}}
+  {{#get "pages" filter="slug:archive" limit="1"}}
+    {{#foreach pages}}
+      <article class="article">
+        <header class="archive-header">
+          <h1 class="archive-title">{{title}}</h1>
+          {{#if custom_excerpt}}<p class="archive-excerpt">{{custom_excerpt}}</p>{{/if}}
+        </header>
+
+        {{#if html}}
+          <section class="archive-body">
+            {{{html}}}
+          </section>
+        {{/if}}
+      </article>
+    {{/foreach}}
+  {{/get}}
+
   {{!-- Filter buttons --}}
   <section class="archive-container">
     <div class="ngw-filters">
@@ -192,12 +192,12 @@
       <button class="ngw-filter-btn" data-filter="prompt-library">Prompt Library</button>
     </div>
 
-    {{!-- Post list --}}
+    {{!-- Post list: pull ALL posts across all collections --}}
     <ul class="archive-list">
       {{#get "posts" limit="all" include="tags" order="published_at desc"}}
         {{#foreach posts}}
           <li class="archive-item"
-              data-tags="{{#foreach tags}}{{slug}} {{/foreach}}">
+              data-tags="{{#foreach tags visibility="all"}}{{slug}} {{/foreach}}">
             <a class="archive-item-link" href="{{url}}">
               <div class="archive-item-top">
                 <h2 class="archive-item-title">{{title}}</h2>
