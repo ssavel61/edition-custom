@@ -1,17 +1,110 @@
 {{!< default}}
-
 <main class="site-main">
-
     {{#post}}
         {{> "content" width="wide"}}
     {{/post}}
 
+    {{!-- End-of-post subscribe CTA --}}
+    <section class="ngw-post-cta gh-canvas">
+        <div class="ngw-post-cta-box">
+            <p class="ngw-post-cta-headline">Enjoy this? Get it in your inbox every Tuesday.</p>
+            <p class="ngw-post-cta-sub">Practical AI workflows. No hype. No spam. Just receipts.</p>
+            <a class="ngw-post-cta-btn" href="#/portal/signup/free">Subscribe Free</a>
+        </div>
+    </section>
+
     {{#if @custom.show_related_posts}}
         {{> "related-posts"}}
     {{/if}}
-
     {{#post}}
         {{> "comments"}}
     {{/post}}
-
 </main>
+
+{{!-- Post CTA styles --}}
+<style>
+  /* End-of-post CTA */
+  .ngw-post-cta {
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 0 1.5rem;
+  }
+  .ngw-post-cta-box {
+    background: #eef3f4;
+    border-left: 3px solid #8abfc5;
+    border-radius: 8px;
+    padding: 2rem 2.5rem;
+    text-align: left;
+    margin: 2rem 0 3rem;
+  }
+  .ngw-post-cta-headline {
+    font-family: var(--gh-font-heading, var(--font-sans));
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: #2c353c;
+    margin: 0 0 0.5rem;
+  }
+  .ngw-post-cta-sub {
+    font-size: 1.4rem;
+    color: #666;
+    margin: 0 0 1.2rem;
+    line-height: 1.5;
+  }
+  .ngw-post-cta-btn {
+    display: inline-block;
+    padding: 10px 24px;
+    background: #f3e2ae;
+    color: #2c353c;
+    font-weight: 700;
+    font-size: 1.4rem;
+    border-radius: 6px;
+    text-decoration: none;
+    transition: background 0.2s;
+  }
+  .ngw-post-cta-btn:hover { background: #e8d49a; }
+
+  /* Mid-post CTA (injected by JS) */
+  .ngw-mid-cta {
+    text-align: center;
+    padding: 1.5rem 0;
+    margin: 0.5rem 0;
+  }
+  .ngw-mid-cta p {
+    font-size: 1.4rem;
+    color: #666;
+    margin: 0 0 0.6rem;
+  }
+  .ngw-mid-cta a {
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: #2c353c;
+    text-decoration: underline;
+    text-decoration-color: #f3e2ae;
+    text-underline-offset: 3px;
+    transition: text-decoration-color 0.2s;
+  }
+  .ngw-mid-cta a:hover {
+    text-decoration-color: #2c353c;
+  }
+
+  @media (max-width: 600px) {
+    .ngw-post-cta-box {
+      padding: 1.5rem;
+    }
+  }
+</style>
+
+{{!-- Inject mid-post CTA after first HR --}}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  var content = document.querySelector('.gh-content');
+  if (!content) return;
+  var firstHr = content.querySelector('hr');
+  if (!firstHr) return;
+
+  var cta = document.createElement('div');
+  cta.className = 'ngw-mid-cta';
+  cta.innerHTML = '<p>Getting value from this? Join hundreds of professionals getting it weekly.</p><a href="#/portal/signup/free">Subscribe free &rarr;</a>';
+  firstHr.parentNode.insertBefore(cta, firstHr.nextSibling);
+});
+</script>
