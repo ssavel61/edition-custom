@@ -1,6 +1,6 @@
 {
   "name": "edition-clean",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "author": { "email": "admin@mindovermoney.ai" },
   "engines": { "ghost": ">=5.0.0" },
   "license": "MIT",
@@ -14,21 +14,6 @@
         "options": ["grid", "list", "Minimal", "Right thumbnail", "Text-only"],
         "default": "grid"
       },
-      "feed_title": {
-        "type": "text",
-        "group": "homepage",
-        "default": "Latest"
-      },
-      "featured_title": {
-        "type": "text",
-        "group": "homepage",
-        "default": "Featured"
-      },
-      "show_featured_posts": {
-        "type": "boolean",
-        "group": "homepage",
-        "default": true
-      },
       "title_font": {
         "type": "select",
         "group": "site",
@@ -40,11 +25,6 @@
         "group": "site",
         "options": ["Modern sans-serif", "Elegant serif"],
         "default": "Modern sans-serif"
-      },
-      "email_signup_text": {
-        "type": "text",
-        "group": "site",
-        "default": "From AI User to AI Builder. One Workflow at a Time"
       },
       "show_related_posts": {
         "type": "boolean",
@@ -61,12 +41,6 @@
         "group": "site",
         "options": ["centered", "stacked"],
         "default": "centered"
-      },
-      "publication_cover_style": {
-        "type": "select",
-        "group": "site",
-        "options": ["circle", "square", "hidden"],
-        "default": "square"
       }
     }
   }
