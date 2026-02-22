@@ -2,7 +2,7 @@
 
 <main class="site-main template-archive">
 
-  {{!-- Pull the editable Page by slug and render title, optional excerpt, hero image, and full body --}}
+  {{!-- Pull the editable Page by slug and render title, optional excerpt, and full body --}}
   {{#get "pages" filter="slug:archive" limit="1"}}
     {{#foreach pages}}
       <article class="article">
@@ -11,67 +11,161 @@
           {{#if custom_excerpt}}<p class="article-excerpt">{{custom_excerpt}}</p>{{/if}}
         </header>
 
-        {{#if feature_image}}
-          <figure class="article-image gh-canvas">
-            <img src="{{img_url feature_image}}" alt="{{title}}">
-          </figure>
+        {{#if html}}
+          <section class="gh-content gh-canvas">
+            {{{html}}}
+          </section>
         {{/if}}
-
-        <section class="gh-content gh-canvas">
-          {{{html}}}
-        </section>
       </article>
     {{/foreach}}
   {{/get}}
 
-  {{!-- Page-local CSS: true thumbnail list, tidy grid, consistent width --}}
+  {{!-- Page-local CSS --}}
   <style>
     :root { --ngw-thumb-h: 180px; }
 
-    .template-archive .article-header { margin-bottom: 1.5rem; }
+    .template-archive .article-header { margin-bottom: 1rem; }
     .template-archive .gh-canvas { max-width: 1000px; margin: 0 auto; }
 
-    .template-archive .ngw-grid {
+    /* Filter buttons */
+    .ngw-filters {
+      display: flex;
+      justify-content: center;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin: 0 0 2.5rem;
+      padding: 0 1rem;
+    }
+    .ngw-filter-btn {
+      padding: 8px 18px;
+      border: 1px solid var(--light-gray-color, #e6e6e6);
+      border-radius: 100px;
+      background: transparent;
+      color: var(--secondary-text-color);
+      font-size: 1.3rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .ngw-filter-btn:hover {
+      border-color: #8abfc5;
+      color: #8abfc5;
+    }
+    .ngw-filter-btn.active {
+      background: #2c353c;
+      border-color: #2c353c;
+      color: #fff;
+    }
+
+    /* Post grid */
+    .ngw-grid {
       list-style: none;
       margin: 0;
       padding: 0;
       display: grid;
       gap: 24px;
-      grid-template-columns: 1fr;          /* single column on all screens */
+      grid-template-columns: 1fr;
     }
 
-    .template-archive .ngw-card { display: block; }
-    .template-archive .ngw-thumb { display:block; overflow:hidden; border-radius:12px; }
-    .template-archive .ngw-thumb img {
-      width:100%; height: var(--ngw-thumb-h); object-fit: cover; display:block;
+    .ngw-card { display: block; }
+    .ngw-card.hidden { display: none; }
+    .ngw-thumb { display: block; overflow: hidden; border-radius: 12px; }
+    .ngw-thumb img {
+      width: 100%; height: var(--ngw-thumb-h); object-fit: cover; display: block;
     }
-    .template-archive .ngw-title {
-      margin:.75rem 0 .25rem; line-height:1.25;
+    .ngw-title {
+      margin: .75rem 0 .25rem; line-height: 1.25;
       font-size: clamp(1.25rem, 2.4vw, 1.6rem);
     }
-    .template-archive .ngw-meta { color: var(--midgrey); font-size:.875rem; }
+    .ngw-meta { color: var(--midgrey); font-size: .875rem; }
+    .ngw-tag-badge {
+      display: inline-block;
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: #8abfc5;
+      margin-left: 0.5rem;
+    }
   </style>
 
-  {{!-- Post list: thumbnail + title + date (no long verbiage) --}}
+  {{!-- Filter buttons --}}
+  <section class="gh-canvas">
+    <div class="ngw-filters">
+      <button class="ngw-filter-btn active" data-filter="all">All</button>
+      <button class="ngw-filter-btn" data-filter="newsletter">Newsletter</button>
+      <button class="ngw-filter-btn" data-filter="founders-corner">Thought Leadership</button>
+      <button class="ngw-filter-btn" data-filter="prompt-library">Prompt Library</button>
+    </div>
+  </section>
+
+  {{!-- Post list: pull ALL posts across all collections --}}
   <section class="gh-canvas">
     <ul class="ngw-grid gh-feed">
-      {{#foreach posts order="published_at desc"}}
-        <li class="ngw-card feed">
-          {{#if feature_image}}
-            <a class="ngw-thumb" href="{{url}}">
-              <img src="{{img_url feature_image size='m'}}"
-                   width="600" height="338" loading="lazy" decoding="async" alt="{{title}}">
-            </a>
-          {{/if}}
+      {{#get "posts" limit="all" include="tags" order="published_at desc"}}
+        {{#foreach posts}}
+          <li class="ngw-card feed"
+              data-tags="{{#foreach tags}}{{slug}} {{/foreach}}">
+            {{#if feature_image}}
+              <a class="ngw-thumb" href="{{url}}">
+                <img src="{{img_url feature_image size='m'}}"
+                     width="600" height="338" loading="lazy" decoding="async" alt="{{title}}">
+              </a>
+            {{/if}}
 
-          <h2 class="ngw-title"><a href="{{url}}">{{title}}</a></h2>
-          <div class="ngw-meta">
-            <time datetime="{{date format='YYYY-MM-DD'}}">{{date format="MMM D, YYYY"}}</time>{{#if reading_time}} · {{reading_time}}{{/if}}
-          </div>
-        </li>
-      {{/foreach}}
+            <h2 class="ngw-title">
+              <a href="{{url}}">{{title}}</a>
+              {{#has tag="#founders-corner"}}
+                <span class="ngw-tag-badge">Thought Leadership</span>
+              {{/has}}
+              {{#has tag="#prompt-library"}}
+                <span class="ngw-tag-badge">Prompt Library</span>
+              {{/has}}
+            </h2>
+            <div class="ngw-meta">
+              <time datetime="{{date format='YYYY-MM-DD'}}">{{date format="MMM D, YYYY"}}</time>
+              {{#if reading_time}} · {{reading_time}}{{/if}}
+            </div>
+          </li>
+        {{/foreach}}
+      {{/get}}
     </ul>
-    {{pagination}}
   </section>
+
+  {{!-- Client-side filtering --}}
+  <script>
+    (function() {
+      var buttons = document.querySelectorAll('.ngw-filter-btn');
+      var cards = document.querySelectorAll('.ngw-card');
+
+      buttons.forEach(function(btn) {
+        btn.addEventListener('click', function() {
+          var filter = this.getAttribute('data-filter');
+
+          // Update active button
+          buttons.forEach(function(b) { b.classList.remove('active'); });
+          this.classList.add('active');
+
+          // Filter cards
+          cards.forEach(function(card) {
+            var tags = card.getAttribute('data-tags') || '';
+            if (filter === 'all') {
+              card.classList.remove('hidden');
+            } else if (filter === 'newsletter') {
+              // Newsletter posts are those WITHOUT founders-corner or prompt-library tags
+              var isFC = tags.indexOf('hash-founders-corner') > -1;
+              var isPL = tags.indexOf('hash-prompt-library') > -1;
+              card.classList.toggle('hidden', isFC || isPL);
+            } else if (filter === 'founders-corner') {
+              card.classList.toggle('hidden', tags.indexOf('hash-founders-corner') === -1);
+            } else if (filter === 'prompt-library') {
+              card.classList.toggle('hidden', tags.indexOf('hash-prompt-library') === -1);
+            }
+          });
+        });
+      });
+    })();
+  </script>
+
 </main>
   
