@@ -6,7 +6,7 @@
   <style>
     /* Top spacing fix */
     .template-archive .site-content {
-      padding-top: max(6vmin, 3rem) !important;
+      padding-top: max(8vmin, 4.5rem) !important;
     }
 
     /* Header */
@@ -188,7 +188,7 @@
     <div class="ngw-filters">
       <button class="ngw-filter-btn active" data-filter="all">All</button>
       <button class="ngw-filter-btn" data-filter="newsletter">Newsletter</button>
-      <button class="ngw-filter-btn" data-filter="founders-corner">Thought Leadership</button>
+      <button class="ngw-filter-btn" data-filter="founders-corner">Founder's Corner</button>
       <button class="ngw-filter-btn" data-filter="prompt-library">Prompt Library</button>
     </div>
 
@@ -205,10 +205,13 @@
               </div>
               <div class="archive-item-meta">
                 {{#has tag="#founders-corner"}}
-                  <span class="archive-item-badge">Thought Leadership</span>
+                  <span class="archive-item-badge">Founder's Corner</span>
                 {{/has}}
                 {{#has tag="#prompt-library"}}
                   <span class="archive-item-badge">Prompt Library</span>
+                {{/has}}
+                {{^has tag="#founders-corner,#prompt-library"}}
+                  <span class="archive-item-badge">Newsletter</span>
                 {{/has}}
                 {{#if reading_time}}
                   <span class="archive-item-reading">{{reading_time}}</span>
