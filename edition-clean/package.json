@@ -1,6 +1,6 @@
 {
   "name": "edition-clean",
-  "version": "1.0.56",
+  "version": "1.1.0",
   "author": { "email": "admin@mindovermoney.ai" },
   "engines": { "ghost": ">=5.0.0" },
   "license": "MIT",
@@ -44,7 +44,7 @@
       "email_signup_text": {
         "type": "text",
         "group": "site",
-        "default": "Financial freedom through mindset, education and technology"
+        "default": "From AI User to AI Builder. One Workflow at a Time"
       },
       "show_related_posts": {
         "type": "boolean",
