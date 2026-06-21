@@ -460,59 +460,43 @@
       <p class="ngw-featured-sub">Not sure where to begin? These three posts capture what Neural Gains Weekly is all about.</p>
 
       <div class="ngw-featured-grid">
-        {{!-- Featured post 1: Your Life Becomes the Dataset --}}
-        {{#get "posts" filter="slug:volume-18-your-life-becomes-the-dataset" limit="1" include="tags"}}
-          {{#foreach posts}}
+        {{!-- Shows the posts you mark as "Featured" in Ghost Admin (up to 3).
+              To curate this section: open a post → Settings → toggle "Feature
+              this post". No code changes needed. --}}
+        {{#get "posts" filter="featured:true" limit="3" include="tags" order="published_at desc" as |featured|}}
+          {{#foreach featured}}
             <div class="ngw-featured-card">
               <a href="{{url}}">
                 {{#if feature_image}}
                   <img class="ngw-featured-img" src="{{img_url feature_image size='m'}}" alt="{{title}}" loading="lazy">
                 {{/if}}
                 <div class="ngw-featured-body">
-                  <div class="ngw-featured-tag">Newsletter</div>
+                  <div class="ngw-featured-tag">{{#has tag="#founders-corner"}}Founder's Corner{{else}}{{#has tag="#prompt-library"}}Steal My Prompt{{else}}Newsletter{{/has}}{{/has}}</div>
                   <h3>{{title}}</h3>
-                  <p>AI is getting personal. The next wave isn't smarter answers. It's tools that learn who you are, how you work, and what you need before you ask.</p>
+                  <p>{{#if custom_excerpt}}{{custom_excerpt}}{{else}}{{excerpt words="26"}}{{/if}}</p>
                 </div>
               </a>
             </div>
           {{/foreach}}
         {{/get}}
+      </div>
 
-        {{!-- Featured post 2: Context is King --}}
-        {{#get "posts" filter="slug:context-is-king-why-your-life-is-the-next-great-training-set" limit="1" include="tags"}}
-          {{#foreach posts}}
-            <div class="ngw-featured-card">
-              <a href="{{url}}">
-                {{#if feature_image}}
-                  <img class="ngw-featured-img" src="{{img_url feature_image size='m'}}" alt="{{title}}" loading="lazy">
-                {{/if}}
-                <div class="ngw-featured-body">
-                  <div class="ngw-featured-tag">Founder's Corner</div>
-                  <h3>{{title}}</h3>
-                  <p>Silicon Valley hit a wall. More compute isn't the answer anymore. The real unlock? The context only you can provide. Here's why that changes everything.</p>
-                </div>
-              </a>
-            </div>
-          {{/foreach}}
-        {{/get}}
-
-        {{!-- Featured post 3: Under the Hood Volume 6 --}}
-        {{#get "posts" filter="slug:under-the-hood-volume-6" limit="1" include="tags"}}
-          {{#foreach posts}}
-            <div class="ngw-featured-card">
-              <a href="{{url}}">
-                {{#if feature_image}}
-                  <img class="ngw-featured-img" src="{{img_url feature_image size='m'}}" alt="{{title}}" loading="lazy">
-                {{/if}}
-                <div class="ngw-featured-body">
-                  <div class="ngw-featured-tag">Steal My Prompt</div>
-                  <h3>{{title}}</h3>
-                  <p>The production prompt behind this volume with full context, the model I used, and exactly what I changed. Steal it. Break it. Make it yours.</p>
-                </div>
-              </a>
-            </div>
-          {{/foreach}}
-        {{/get}}
+      <style>
+        .ngw-featured-ask { text-align: center; margin-top: 2.5rem; }
+        .ngw-ask-ai-btn {
+          display: inline-flex; align-items: center; gap: 8px;
+          background: #8abfc5; color: #2c353c; border: none; border-radius: 100px;
+          padding: 13px 28px; font-size: 1.6rem; font-weight: 700; cursor: pointer;
+          font-family: inherit; transition: transform .15s ease, background .15s ease;
+        }
+        .ngw-ask-ai-btn:hover { transform: translateY(-2px); background: #7ab2b9; }
+        .ngw-ask-ai-note { margin: 12px 0 0; font-size: 1.35rem; color: rgba(255,255,255,0.72); }
+      </style>
+      <div class="ngw-featured-ask">
+        <button type="button" class="ngw-ask-ai-btn" onclick="window.MindOverMoneyChat && window.MindOverMoneyChat.open()">
+          <span aria-hidden="true">✨</span> Ask the AI assistant
+        </button>
+        <p class="ngw-ask-ai-note">Tell it what you're working on — it'll point you to the right posts in seconds.</p>
       </div>
     </div>
   </section>
