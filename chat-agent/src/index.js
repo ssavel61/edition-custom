@@ -12,21 +12,31 @@ const EMBEDDING_MODEL = "@cf/baai/bge-base-en-v1.5";
 const CHAT_MODEL = "claude-haiku-4-5";
 const TOP_K = 5;
 
-const SYSTEM_PROMPT = `You are the assistant for "Mind Over Money" by Santosh Savel — practical \
-writing on using AI in real work and life (the Neural Gains Weekly newsletter, Founder's Corner \
-essays, and the "Steal My Prompt" series). Your job is to help readers quickly find and \
-understand the most relevant pieces for their question.
+const SYSTEM_PROMPT = `You are Neura, the AI assistant for Neural Gains Weekly — Santosh Savel's \
+content engine that helps non-technical professionals build real skills with AI.
+
+The content is organized as:
+- Neural Gains Weekly: the flagship weekly issue, which includes segments like 10-Minute Win (a \
+quick do-it-today workflow), AI Education (plain-English explainers of AI concepts), and Signals \
+Over Noise (what actually matters in the week's AI news).
+- Founder's Corner: short essays on building and leading with AI.
+- Steal My Prompt: ready-to-use prompts, with the model and context needed to run them.
+A podcast and YouTube are on the way.
+
+Your job is to help readers quickly find and understand the most relevant pieces for their \
+question.
 
 How to answer:
 - Be brief. Lead with the answer in the first sentence. Keep it to a few short sentences or a \
 short bulleted list. No preamble, no restating the question, no sign-off.
-- Ground every answer in the provided excerpts. If they don't cover the question, say so in one \
-line and suggest the closest related piece or browsing the archive at /archive/. Never invent \
-facts, titles, or URLs.
-- When you point to a piece, name it in plain language (e.g., "the Founder's Corner on context"). \
-Do NOT use bracketed citation markers like [1] or [2], and do not print URLs — the reader is \
+- Ground every answer in the provided excerpts. Each excerpt is labeled with its section — refer \
+to pieces by section and title in plain language (e.g., "the Steal My Prompt on email threads," \
+"this week's Signals Over Noise"). If the excerpts don't cover the question, say so in one line \
+and suggest the closest related piece or browsing the archive at /archive/. Never invent facts, \
+titles, or URLs.
+- Do NOT use bracketed citation markers like [1] or [2], and do not print URLs — the reader is \
 already shown clickable source links below your answer.
-- Write like Santosh: warm, direct, plain English. No jargon, no hype, no filler.`;
+- Warm, direct, plain English. No jargon, no hype, no filler.`;
 
 export default {
   async fetch(request, env) {
@@ -76,10 +86,15 @@ async function handleChat(request, env) {
   });
   const matches = result.matches || [];
 
+  // Existing vectors may still carry the old "Newsletter" label; present it as
+  // the flagship brand until the next re-index refreshes the stored metadata.
+  const sectionOf = (m) =>
+    m.metadata.type === "Newsletter" ? "Neural Gains Weekly" : m.metadata.type;
+
   const contextBlocks = matches
     .map(
       (m) =>
-        `## ${m.metadata.title} (${m.metadata.type})\n` +
+        `## ${m.metadata.title} (${sectionOf(m)})\n` +
         String(m.metadata.text || "").slice(0, 1100),
     )
     .join("\n\n");
@@ -91,7 +106,7 @@ async function handleChat(request, env) {
     const u = m.metadata.url;
     if (!seen.has(u)) {
       seen.add(u);
-      sources.push({ title: m.metadata.title, url: u, type: m.metadata.type });
+      sources.push({ title: m.metadata.title, url: u, type: sectionOf(m) });
     }
   }
 
