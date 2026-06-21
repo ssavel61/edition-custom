@@ -1,0 +1,24 @@
+{{!-- Single archive list row. Expects a post as the current context. --}}
+<li class="archive-item"
+    data-tags="{{#foreach tags visibility="all"}}{{slug}} {{/foreach}}">
+  <a class="archive-item-link" href="{{url}}">
+    <div class="archive-item-top">
+      <h2 class="archive-item-title">{{title}}</h2>
+      <span class="archive-item-date">{{date published_at format="MMM D, YYYY"}}</span>
+    </div>
+    <div class="archive-item-meta">
+      {{#has tag="#founders-corner"}}
+        <span class="archive-item-badge">Founder's Corner</span>
+      {{/has}}
+      {{#has tag="#prompt-library"}}
+        <span class="archive-item-badge">Steal My Prompt</span>
+      {{/has}}
+      {{^has tag="#founders-corner,#prompt-library"}}
+        <span class="archive-item-badge">Newsletter</span>
+      {{/has}}
+      {{#if reading_time}}
+        <span class="archive-item-reading">{{reading_time}}</span>
+      {{/if}}
+    </div>
+  </a>
+</li>
