@@ -5,7 +5,7 @@
 --}}
 <style>
   .mom-chat-launcher {
-    position: fixed; bottom: 24px; left: 24px; z-index: 99999;
+    position: fixed; bottom: 24px; right: 24px; z-index: 99999;
     display: flex; align-items: center; gap: 9px;
     height: 52px; padding: 0 20px 0 17px; border: none; border-radius: 100px;
     background: #2c353c; color: #fff; cursor: pointer;
@@ -19,7 +19,7 @@
   .mom-chat-launcher-label { white-space: nowrap; }
 
   .mom-chat-panel {
-    position: fixed; bottom: 88px; left: 24px; z-index: 100000;
+    position: fixed; bottom: 88px; right: 24px; z-index: 100000;
     width: 380px; max-width: calc(100vw - 32px);
     height: 560px; max-height: calc(100vh - 130px);
     background: #fff; border-radius: 16px; overflow: hidden;
@@ -62,7 +62,7 @@
 
   @media (max-width: 480px) {
     .mom-chat-panel { left: 8px; right: 8px; width: auto; bottom: 80px; height: calc(100vh - 110px); }
-    .mom-chat-launcher { left: 16px; bottom: 16px; }
+    .mom-chat-launcher { right: 16px; bottom: 16px; }
   }
 </style>
 
@@ -103,18 +103,21 @@
 
   launcher.hidden = false;
 
-  function open() {
+  function open(prefill) {
     panel.classList.add("open");
     if (!body.childNodes.length) {
       addBot("Hi! Ask me anything about Santosh's writing on AI — I'll point you to the most useful pieces. What are you working on?");
     }
-    input.focus();
+    if (prefill) { input.value = prefill; send(); }
+    else { input.focus(); }
   }
   function close() { panel.classList.remove("open"); }
 
-  // Let other parts of the site (e.g. the homepage button) open the chat.
+  // Let other parts of the site (e.g. the homepage buttons) open the chat,
+  // optionally asking a question immediately.
   window.MindOverMoneyChat = {
-    open: open,
+    open: function () { open(); },
+    ask: function (q) { open(q); },
     close: close,
     toggle: function () { panel.classList.contains("open") ? close() : open(); },
   };
