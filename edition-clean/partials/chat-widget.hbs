@@ -40,11 +40,12 @@
   .mom-chat-close:hover { opacity: 1; }
 
   .mom-chat-body { flex: 1; overflow-y: auto; padding: 16px; background: #f4f6f7; }
-  .mom-chat-msg { margin-bottom: 14px; font-size: 1.45rem; line-height: 1.55; }
-  .mom-chat-msg .bubble { display: inline-block; padding: 10px 14px; border-radius: 14px; max-width: 90%; white-space: pre-wrap; }
+  .mom-chat-msg { margin-bottom: 14px; font-size: 1.5rem; line-height: 1.6; }
+  .mom-chat-msg .bubble { display: inline-block; padding: 11px 15px; border-radius: 14px; max-width: 92%; text-align: left; }
   .mom-chat-msg.user { text-align: right; }
   .mom-chat-msg.user .bubble { background: #2c353c; color: #fff; border-bottom-right-radius: 4px; }
-  .mom-chat-msg.bot .bubble { background: #fff; color: #2c353c; border: 1px solid #e1e7e9; border-bottom-left-radius: 4px; }
+  .mom-chat-msg.bot .bubble { background: #fff; color: #232c33; border: 1px solid #d7dee1; border-bottom-left-radius: 4px; }
+  .mom-chat-msg .bubble strong { font-weight: 700; }
   .mom-chat-sources { margin-top: 8px; }
   .mom-chat-sources a { display: block; font-size: 1.25rem; color: #5a8a90; text-decoration: none; padding: 4px 0; border-top: 1px solid #e1e7e9; }
   .mom-chat-sources a:hover { color: #2c353c; }
@@ -147,6 +148,14 @@
       return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c];
     });
   }
+  // Minimal, safe Markdown -> HTML: escape first, then **bold**, bullets, breaks.
+  function renderMarkdown(text) {
+    var html = escapeHtml(text);
+    html = html.replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>");
+    html = html.replace(/(^|\n)\s*[-*]\s+/g, "$1• ");
+    html = html.replace(/\n{2,}/g, "<br><br>").replace(/\n/g, "<br>");
+    return html;
+  }
   function addUser(text) {
     var m = el("mom-chat-msg user");
     m.appendChild(el("bubble", escapeHtml(text)));
@@ -213,7 +222,7 @@
           } else if (ev === "token") {
             try {
               answer += JSON.parse(data);
-              bubble.textContent = answer;
+              bubble.innerHTML = renderMarkdown(answer);
               body.scrollTop = body.scrollHeight;
             } catch (e) {}
           } else if (ev === "error") {
