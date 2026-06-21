@@ -10,24 +10,23 @@ import { ingestAll } from "./ingest.js";
 
 const EMBEDDING_MODEL = "@cf/baai/bge-base-en-v1.5";
 const CHAT_MODEL = "claude-haiku-4-5";
-const TOP_K = 6;
+const TOP_K = 5;
 
-const SYSTEM_PROMPT = `You are the guide for "Mind Over Money" by Santosh Savel — a body of work \
-about applying AI in real life and business, published as the Neural Gains Weekly newsletter, \
-Founder's Corner essays, and the "Steal My Prompt" series.
+const SYSTEM_PROMPT = `You are the assistant for "Mind Over Money" by Santosh Savel — practical \
+writing on using AI in real work and life (the Neural Gains Weekly newsletter, Founder's Corner \
+essays, and the "Steal My Prompt" series). Your job is to help readers quickly find and \
+understand the most relevant pieces for their question.
 
-Your job is to help readers find and understand the most relevant content for their question, \
-so they don't have to search manually. You can recommend pieces to read, summarize ideas across \
-them, and assemble simple learning paths from the material.
-
-Rules:
-- Answer ONLY from the retrieved excerpts provided in the context. Do not invent facts, titles, \
-or URLs.
-- When you reference a piece, cite it inline like [1], [2] matching the numbered excerpts, and \
-weave in its title.
-- If the excerpts don't cover the question, say so plainly and suggest the closest related \
-content or browsing the archive at /archive/. Never fabricate an answer.
-- Be warm, concise, and practical. Short paragraphs. Get to the recommendation quickly.`;
+How to answer:
+- Be brief. Lead with the answer in the first sentence. Keep it to a few short sentences or a \
+short bulleted list. No preamble, no restating the question, no sign-off.
+- Ground every answer in the provided excerpts. If they don't cover the question, say so in one \
+line and suggest the closest related piece or browsing the archive at /archive/. Never invent \
+facts, titles, or URLs.
+- When you point to a piece, name it in plain language (e.g., "the Founder's Corner on context"). \
+Do NOT use bracketed citation markers like [1] or [2], and do not print URLs — the reader is \
+already shown clickable source links below your answer.
+- Write like Santosh: warm, direct, plain English. No jargon, no hype, no filler.`;
 
 export default {
   async fetch(request, env) {
@@ -79,11 +78,11 @@ async function handleChat(request, env) {
 
   const contextBlocks = matches
     .map(
-      (m, i) =>
-        `[${i + 1}] ${m.metadata.title} (${m.metadata.type})\n` +
-        `URL: ${m.metadata.url}\n${m.metadata.text}`,
+      (m) =>
+        `## ${m.metadata.title} (${m.metadata.type})\n` +
+        String(m.metadata.text || "").slice(0, 1100),
     )
-    .join("\n\n---\n\n");
+    .join("\n\n");
 
   // De-duplicate sources by URL for the citation list shown to the reader.
   const seen = new Set();
@@ -107,7 +106,7 @@ async function handleChat(request, env) {
     {
       type: "text",
       text:
-        "Retrieved excerpts for this question (cite as [1], [2], …):\n\n" +
+        "Excerpts from Mind Over Money to answer from:\n\n" +
         (contextBlocks || "No relevant content was found."),
     },
   ];
@@ -121,7 +120,7 @@ async function handleChat(request, env) {
     },
     body: JSON.stringify({
       model: CHAT_MODEL,
-      max_tokens: 1024,
+      max_tokens: 700,
       stream: true,
       system,
       messages: anthropicMessages,
