@@ -33,8 +33,8 @@
     background: #2c353c; color: #fff; padding: 16px 18px;
     display: flex; align-items: center; justify-content: space-between;
   }
-  .mom-chat-header h3 { margin: 0; font-size: 1.5rem; font-weight: 700; }
-  .mom-chat-header p { margin: 2px 0 0; font-size: 1.2rem; opacity: .7; }
+  .mom-chat-header h3 { margin: 0; font-size: 1.5rem; font-weight: 700; color: #fff !important; }
+  .mom-chat-header p { margin: 2px 0 0; font-size: 1.2rem; color: rgba(255,255,255,0.8) !important; }
   .mom-chat-close { background: none; border: none; color: #fff; cursor: pointer;
     font-size: 2rem; line-height: 1; opacity: .8; }
   .mom-chat-close:hover { opacity: 1; }
@@ -43,8 +43,8 @@
   .mom-chat-msg { margin-bottom: 14px; font-size: 1.5rem; line-height: 1.6; }
   .mom-chat-msg .bubble { display: inline-block; padding: 11px 15px; border-radius: 14px; max-width: 92%; text-align: left; }
   .mom-chat-msg.user { text-align: right; }
-  .mom-chat-msg.user .bubble { background: #2c353c; color: #fff; border-bottom-right-radius: 4px; }
-  .mom-chat-msg.bot .bubble { background: #fff; color: #232c33; border: 1px solid #d7dee1; border-bottom-left-radius: 4px; }
+  .mom-chat-msg.user .bubble { background: #2c353c !important; color: #fff !important; border-bottom-right-radius: 4px; }
+  .mom-chat-msg.bot .bubble { background: #fff !important; color: #232c33 !important; border: 1px solid #d7dee1; border-bottom-left-radius: 4px; }
   .mom-chat-msg .bubble strong { font-weight: 700; }
   .mom-chat-sources { margin-top: 8px; }
   .mom-chat-sources a { display: block; font-size: 1.25rem; color: #5a8a90; text-decoration: none; padding: 4px 0; border-top: 1px solid #e1e7e9; }
@@ -54,7 +54,7 @@
   .mom-chat-input { display: flex; gap: 8px; padding: 12px; border-top: 1px solid #e1e7e9; background: #fff; }
   .mom-chat-input textarea {
     flex: 1; resize: none; border: 1px solid #d5dee0; border-radius: 10px;
-    padding: 10px 12px; font-size: 1.4rem; font-family: inherit; max-height: 100px;
+    padding: 10px 12px; font-size: 1.4rem; font-family: inherit; max-height: 100px; color: #232c33;
   }
   .mom-chat-input textarea:focus { outline: none; border-color: #8abfc5; }
   .mom-chat-send { border: none; background: #8abfc5; color: #fff; border-radius: 10px;
