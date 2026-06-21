@@ -201,34 +201,34 @@
       <button class="ngw-filter-btn" data-filter="prompt-library">Steal My Prompt</button>
     </div>
 
-    {{!-- Post list --}}
+    {{!--
+      Post list.
+
+      Ghost 6 caps every {{#get}} query (and the Content API) at a maximum of
+      100 results, even when limit="all" is requested. With more than ~100
+      posts that silently truncates the archive, so the oldest issues never
+      appear and every filter tab (filtering is client-side, below) is missing
+      them too. To show the full back catalogue we page through the posts in
+      batches of 100. Each block returns the next 100 newest posts in date
+      order, so they render seamlessly as one continuous descending list.
+      Pages beyond the available posts simply render nothing. Add another
+      {{#get ... page="N"}} block here if the archive ever exceeds 500 posts.
+    --}}
     <ul class="archive-list">
-      {{#get "posts" limit="all" include="tags" order="published_at desc"}}
-        {{#foreach posts}}
-          <li class="archive-item"
-              data-tags="{{#foreach tags visibility="all"}}{{slug}} {{/foreach}}">
-            <a class="archive-item-link" href="{{url}}">
-              <div class="archive-item-top">
-                <h2 class="archive-item-title">{{title}}</h2>
-                <span class="archive-item-date">{{date published_at format="MMM D, YYYY"}}</span>
-              </div>
-              <div class="archive-item-meta">
-                {{#has tag="#founders-corner"}}
-                  <span class="archive-item-badge">Founder's Corner</span>
-                {{/has}}
-                {{#has tag="#prompt-library"}}
-                  <span class="archive-item-badge">Steal My Prompt</span>
-                {{/has}}
-                {{^has tag="#founders-corner,#prompt-library"}}
-                  <span class="archive-item-badge">Newsletter</span>
-                {{/has}}
-                {{#if reading_time}}
-                  <span class="archive-item-reading">{{reading_time}}</span>
-                {{/if}}
-              </div>
-            </a>
-          </li>
-        {{/foreach}}
+      {{#get "posts" limit="100" page="1" include="tags" order="published_at desc"}}
+        {{#foreach posts}}{{> archive-item}}{{/foreach}}
+      {{/get}}
+      {{#get "posts" limit="100" page="2" include="tags" order="published_at desc"}}
+        {{#foreach posts}}{{> archive-item}}{{/foreach}}
+      {{/get}}
+      {{#get "posts" limit="100" page="3" include="tags" order="published_at desc"}}
+        {{#foreach posts}}{{> archive-item}}{{/foreach}}
+      {{/get}}
+      {{#get "posts" limit="100" page="4" include="tags" order="published_at desc"}}
+        {{#foreach posts}}{{> archive-item}}{{/foreach}}
+      {{/get}}
+      {{#get "posts" limit="100" page="5" include="tags" order="published_at desc"}}
+        {{#foreach posts}}{{> archive-item}}{{/foreach}}
       {{/get}}
     </ul>
     <div class="archive-empty">No posts found for this filter.</div>
