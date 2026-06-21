@@ -75,8 +75,8 @@
 <div class="mom-chat-panel" id="mom-chat-panel" role="dialog" aria-label="Content assistant">
   <div class="mom-chat-header">
     <div>
-      <h3>Ask Mind Over Money</h3>
-      <p>Find the right content, fast.</p>
+      <h3>Neura</h3>
+      <p>Your Mind Over Money guide</p>
     </div>
     <button class="mom-chat-close" id="mom-chat-close" aria-label="Close">&times;</button>
   </div>
@@ -107,7 +107,7 @@
   function open(prefill) {
     panel.classList.add("open");
     if (!body.childNodes.length) {
-      addBot("Hi! Ask me anything about Santosh's writing on AI — I'll point you to the most useful pieces. What are you working on?");
+      addBot("Hi, I'm Neura — ask me anything about Santosh's writing on AI and I'll point you to the most useful pieces. What are you working on?");
     }
     if (prefill) { input.value = prefill; send(); }
     else { input.focus(); }
