@@ -1,0 +1,14 @@
+{
+  "name": "mindovermoney-chat",
+  "version": "0.1.0",
+  "private": true,
+  "description": "RAG chat backend for Mind Over Money (Cloudflare Worker)",
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy",
+    "tail": "wrangler tail"
+  },
+  "devDependencies": {
+    "wrangler": "^3.90.0"
+  }
+}

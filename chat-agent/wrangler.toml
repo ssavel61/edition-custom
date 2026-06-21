@@ -1,0 +1,25 @@
+name = "mindovermoney-chat"
+main = "src/index.js"
+compatibility_date = "2024-11-01"
+
+# --- Vector database (stores embeddings of your content) ---
+# Create it once before first deploy:
+#   npx wrangler vectorize create mindovermoney-content --dimensions=768 --metric=cosine
+[[vectorize]]
+binding = "VECTORIZE"
+index_name = "mindovermoney-content"
+
+# --- Workers AI (runs the embedding model) ---
+[ai]
+binding = "AI"
+
+# --- Public, non-secret configuration ---
+# Secrets (ANTHROPIC_API_KEY, GHOST_CONTENT_API_KEY, INGEST_SECRET) are set
+# separately with `wrangler secret put` — never commit them here.
+[vars]
+GHOST_API_URL = "https://www.mindovermoney.ai"
+ALLOWED_ORIGIN = "https://www.mindovermoney.ai"
+
+# --- Scheduled re-index: daily at 06:00 UTC ---
+[triggers]
+crons = ["0 6 * * *"]
