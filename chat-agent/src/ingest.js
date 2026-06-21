@@ -77,7 +77,7 @@ function postType(post) {
   const slugs = (post.tags || []).map((t) => t.slug);
   if (slugs.includes("hash-founders-corner")) return "Founder's Corner";
   if (slugs.includes("hash-prompt-library")) return "Steal My Prompt";
-  return "Newsletter";
+  return "Neural Gains Weekly";
 }
 
 // Split text into overlapping chunks, preferring sentence boundaries.
