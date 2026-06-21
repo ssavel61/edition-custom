@@ -482,21 +482,36 @@
       </div>
 
       <style>
-        .ngw-featured-ask { text-align: center; margin-top: 2.5rem; }
+        .ngw-featured-ask { text-align: center; margin-top: 2.75rem; }
+        .ngw-ask-ai-title { font-size: 2rem; font-weight: 800; margin: 0 0 .5rem; }
+        .ngw-ask-ai-note { margin: 0 auto 1.3rem; max-width: 560px; font-size: 1.4rem; line-height: 1.5; color: rgba(255,255,255,0.78); }
+        .ngw-ai-chips { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; margin: 0 auto 1.5rem; max-width: 580px; }
+        .ngw-ai-chip {
+          background: rgba(255,255,255,0.08); color: #fff;
+          border: 1px solid rgba(255,255,255,0.25); border-radius: 100px;
+          padding: 8px 16px; font-size: 1.3rem; font-family: inherit; cursor: pointer;
+          transition: background .15s ease, border-color .15s ease;
+        }
+        .ngw-ai-chip:hover { background: rgba(138,191,197,0.22); border-color: #8abfc5; }
         .ngw-ask-ai-btn {
           display: inline-flex; align-items: center; gap: 8px;
           background: #8abfc5; color: #2c353c; border: none; border-radius: 100px;
-          padding: 13px 28px; font-size: 1.6rem; font-weight: 700; cursor: pointer;
+          padding: 13px 30px; font-size: 1.6rem; font-weight: 700; cursor: pointer;
           font-family: inherit; transition: transform .15s ease, background .15s ease;
         }
         .ngw-ask-ai-btn:hover { transform: translateY(-2px); background: #7ab2b9; }
-        .ngw-ask-ai-note { margin: 12px 0 0; font-size: 1.35rem; color: rgba(255,255,255,0.72); }
       </style>
       <div class="ngw-featured-ask">
+        <h3 class="ngw-ask-ai-title">New here? Just ask.</h3>
+        <p class="ngw-ask-ai-note">Tell the AI assistant what you're working on, and it points you to the exact posts that help — with links. Tap a question to try it, or ask your own:</p>
+        <div class="ngw-ai-chips">
+          <button type="button" class="ngw-ai-chip" onclick="window.MindOverMoneyChat && window.MindOverMoneyChat.ask('Where should I start if I am new to using AI at work?')">Where do I start?</button>
+          <button type="button" class="ngw-ai-chip" onclick="window.MindOverMoneyChat && window.MindOverMoneyChat.ask('Give me one AI prompt I can use today.')">Give me a prompt</button>
+          <button type="button" class="ngw-ai-chip" onclick="window.MindOverMoneyChat && window.MindOverMoneyChat.ask('How do I get my team to actually adopt AI?')">Team adoption</button>
+        </div>
         <button type="button" class="ngw-ask-ai-btn" onclick="window.MindOverMoneyChat && window.MindOverMoneyChat.open()">
-          <span aria-hidden="true">✨</span> Ask the AI assistant
+          <span aria-hidden="true">✨</span> Open the AI assistant
         </button>
-        <p class="ngw-ask-ai-note">Tell it what you're working on — it'll point you to the right posts in seconds.</p>
       </div>
     </div>
   </section>
