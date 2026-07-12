@@ -55,3 +55,64 @@ Theme (`edition-clean/`):
 Worker (`chat-agent/`):
 - `cd chat-agent && npm install` — install wrangler.
 - `npx wrangler dev` — run locally; `npx wrangler deploy` — deploy; `npx wrangler tail` — stream live logs (use this to debug a deployed Worker).
+
+---
+
+## ⚠️ THIS REPOSITORY IS PUBLIC
+
+Everything committed here — code, comments, commit messages, docs — is visible to the open internet and permanently recorded in git history. Before writing anything to this repo:
+
+- **NEVER** commit API keys, tokens, secrets, or credentials. Worker secrets live in `wrangler secret`, never in the repo.
+- **NEVER** name Santosh's employer. Not in code, comments, commits, docs, or examples — and not even to restate this rule. Healthcare examples stay industry-general.
+- Business strategy, subscriber data, and private context live in the **private** `ngw-dev` repo. Do not mirror them here.
+- Sibling projects (`n8n`, `drive-reorg`, `podcast`) and the NGW operating docs are private. Reference them by name only.
+
+## Current state and open work (as of 7.11.26)
+
+### Owner context
+
+This repo belongs to the NGW dev ecosystem. Business context, strategy docs, and sibling projects (n8n research agent, Drive reorganization, podcast planning) live in the private `ngw-dev` repo. Read `ngw-dev/CLAUDE.md` for how to work with Santosh: sequential approval gates, one question at a time, plan mode before non-trivial changes, no deploys without explicit approval, receipts before claims.
+
+### First-session verification (do this before any Neura work)
+
+The Worker deploys manually (`npx wrangler deploy` from `chat-agent/`), so committed code and deployed code can drift. Before editing anything, verify they match: pull the deployed Worker with `npx wrangler versions` / dashboard comparison or redeploy from a clean checkout and confirm behavior is unchanged via `/health` and one test chat. Record the result. Do not patch code you have not confirmed is the code in production.
+
+**Status: QUEUED, not yet run.** This is the first task of the Neura fix session (target ~7.25.26). It was explicitly deferred out of the 7.11.26 architecture session.
+
+### Neura eval baseline (measured 6.28.26)
+
+A QA eval harness runs 9 fixed questions against the live widget in three buckets. Full harness spec: `Neura_Eval_Harness_Context_Doc_6.28.26.md` (mirrored in `ngw-dev/reference/`).
+
+- **Baseline score: 4/9.**
+- **Bucket A (counts/inventory, 3 questions): fails.** "How many issues are on the site?" Top-5 retrieval physically cannot see the full inventory. Failure tag: architecture limit, not fabrication. Neura hedging honestly is correct behavior against a real product gap.
+- **Bucket B (recency/enumeration/superlative, 3 questions): fails** for the same reason. "List all Steal My Prompt titles" returns ~5 of ~38.
+- **Bucket C (topic questions, 3 questions): passes.** These are controls. Any fix MUST NOT regress Bucket C.
+
+### The planned fix: catalog-summary injection
+
+**Design intent:** at ingest time (`src/ingest.js` already paginates every post), compute a compact catalog summary: total post count, count per content type, full title list per type with publish dates, newest and oldest post per type. Persist it (Workers KV is the expected store; decide in-session). At query time (`src/index.js`, `/chat` handler), inject the summary into the system prompt alongside retrieved chunks. Counts and "latest" answers then come from the catalog, not from retrieval.
+
+**Constraints:**
+- The summary must refresh on every ingest run (daily cron and manual `POST /ingest`) so it never goes stale relative to the index.
+- Watch prompt size: full title lists for ~115 posts are fine today; note the growth ceiling in a code comment.
+- No behavior change to Bucket C answering. Retrieved-chunk flow stays untouched.
+
+**Acceptance criteria (receipts required):**
+1. Re-run the eval harness after deploy. Bucket A converts to specific, correct figures (hedges = fail). Bucket B names the correct latest issue and Vol 1, and lists all SMP titles.
+2. Bucket C remains 3/3.
+3. Before/after scores recorded in a dated eval report (`Neura_Eval_Report_MM.DD.YY.md`) and pasted into the build log receipts section.
+4. Target: 9/9. Anything at or above 8/9 with Bucket C intact is shippable; log the miss.
+
+### Standing gotchas (already documented in this repo, do not relearn)
+
+- Ghost 6 caps every Content API / `{{#get}}` query at 100 results regardless of `limit="all"`. Always paginate.
+- Theme auto-deploys on push to `main`; the Worker does NOT. Backend changes require manual `npx wrangler deploy`.
+- Re-index overwrites by deterministic chunk ID; shrinking posts can leave stale chunks until a full rebuild.
+- The one external dependency that silently kills Neura is Anthropic API credit. Low-balance alert should be set in the Anthropic console.
+
+### Deferred / parked (do not build unprompted)
+
+- Instant indexing via Ghost publish webhook. `POST /ingest` is authenticated by the `x-ingest-secret` header; Ghost webhooks cannot send custom headers, so this needs a `?token=` query-param path added.
+- Podcast/YouTube transcript ingestion (Phase 2). NOTE: the podcast is no longer deferred to 2027 — Season Zero was committed on 7.11.26 for September to late October 2026. Transcript ingestion remains parked regardless; do not build it unprompted.
+- Learning-plans guided mode (Phase 3).
+- Embedding upgrade to Voyage (only if retrieval quality demands it; Bucket C says it does not).
