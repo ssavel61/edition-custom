@@ -73,35 +73,30 @@ Everything committed here — code, comments, commit messages, docs — is visib
 
 This repo belongs to the NGW dev ecosystem. Business context, strategy docs, and sibling projects (n8n research agent, Drive reorganization, podcast planning) live in the private `ngw-dev` repo. Read `ngw-dev/CLAUDE.md` for how to work with Santosh: sequential approval gates, one question at a time, plan mode before non-trivial changes, no deploys without explicit approval, receipts before claims.
 
-### First-session verification (do this before any Neura work)
+### Neura eval: 4/9 → 9/9, SHIPPED 7.13.26
 
-The Worker deploys manually (`npx wrangler deploy` from `chat-agent/`), so committed code and deployed code can drift. Before editing anything, verify they match: pull the deployed Worker with `npx wrangler versions` / dashboard comparison or redeploy from a clean checkout and confirm behavior is unchanged via `/health` and one test chat. Record the result. Do not patch code you have not confirmed is the code in production.
+A QA eval harness runs 9 fixed questions against the live widget in three buckets — A: counts/inventory, B: recency/enumeration, C: topic questions (controls). Full harness spec: `Neura_Eval_Harness_Context_Doc_6.28.26.md` (mirrored in `ngw-dev/reference/`).
 
-**Status: QUEUED, not yet run.** This is the first task of the Neura fix session (target ~7.25.26). It was explicitly deferred out of the 7.11.26 architecture session.
+**Baseline 6.28.26: 4/9.** Buckets A and B failed wholesale — top-5 retrieval physically cannot see the full inventory, so "how many issues are on the site?" was unanswerable. Failure tag: architecture limit, not fabrication.
 
-### Neura eval baseline (measured 6.28.26)
+**Now 9/9 with Bucket C at 3/3** (measured 7.13.26 against the live Worker, version `b50594dc`). Two fixes got it there.
 
-A QA eval harness runs 9 fixed questions against the live widget in three buckets. Full harness spec: `Neura_Eval_Harness_Context_Doc_6.28.26.md` (mirrored in `ngw-dev/reference/`).
+**1. Catalog-summary injection (7.12.26).** `src/ingest.js` renders a full inventory — totals, newest/oldest, every title with its date — into Workers KV on every index run; `src/index.js` injects it into the system prompt. Counts, dates and listings no longer depend on retrieval, because they are properties of the whole set and appear in the text of no single chunk. Took the score to 8/9.
 
-- **Baseline score: 4/9.**
-- **Bucket A (counts/inventory, 3 questions): fails.** "How many issues are on the site?" Top-5 retrieval physically cannot see the full inventory. Failure tag: architecture limit, not fabrication. Neura hedging honestly is correct behavior against a real product gap.
-- **Bucket B (recency/enumeration/superlative, 3 questions): fails** for the same reason. "List all Steal My Prompt titles" returns ~5 of ~38.
-- **Bucket C (topic questions, 3 questions): passes.** These are controls. Any fix MUST NOT regress Bucket C.
+**2. [ARCHIVE] marking of the retired positioning (7.13.26).** The last failure was C3 — *"What is a 10-Minute Win?"* — which was logged for two weeks as a hallucination. **It was not one.** Neural Gains Weekly launched with a personal-finance and investing lens and moved to AI education for professionals in early 2026. Five published Steal My Prompt volumes (1, 5, 6, 7, 20) publish the newsletter's own content-generation prompts, and those prompts still state the original framing — Vol. 7 defines the 10-Minute Win outright as *"a workflow for personal finance or investing beginners."* Retrieval surfaced those posts and the model repeated them, **faithfully**. It was quoting the corpus. The eval was measuring the content and blaming the model.
 
-### The planned fix: catalog-summary injection
+The posts stay published — they are accurate history. Instead, `ingest.js` judges each **post** against a retired-positioning pattern and stamps every chunk it produces; `index.js` prefixes those excerpts with an `[ARCHIVE]` note. Verified against all 124 posts: exactly those 5 flag, all 14 of their chunks carry the marker, no other post is touched.
 
-**Design intent:** at ingest time (`src/ingest.js` already paginates every post), compute a compact catalog summary: total post count, count per content type, full title list per type with publish dates, newest and oldest post per type. Persist it (Workers KV is the expected store; decide in-session). At query time (`src/index.js`, `/chat` handler), inject the summary into the system prompt alongside retrieved chunks. Counts and "latest" answers then come from the catalog, not from retrieval.
+**Two design rules worth keeping, both learned by getting them wrong first:**
 
-**Constraints:**
-- The summary must refresh on every ingest run (daily cron and manual `POST /ingest`) so it never goes stale relative to the index.
-- Watch prompt size: full title lists for ~115 posts are fine today; note the growth ceiling in a code comment.
-- No behavior change to Bucket C answering. Retrieved-chunk flow stays untouched.
+- **Put the correction next to the evidence, not in a rule the model must remember.** A global "ignore that framing" line in the system prompt asks the model to hold an instruction while reading text that contradicts it. The `[ARCHIVE]` note travels *with* the excerpt, so the stale claim cannot be read without the correction.
+- **Judge the post, not the chunk.** "This piece reflects the old framing" is a property of the piece. The positioning statement sits in the opening chunk, but later chunks carry finance examples with no such statement — judging each chunk on its own text leaves those unmarked. That is why the flag is computed at ingest, where the whole post is visible.
 
-**Acceptance criteria (receipts required):**
-1. Re-run the eval harness after deploy. Bucket A converts to specific, correct figures (hedges = fail). Bucket B names the correct latest issue and Vol 1, and lists all SMP titles.
-2. Bucket C remains 3/3.
-3. Before/after scores recorded in a dated eval report (`Neura_Eval_Report_MM.DD.YY.md`) and pasted into the build log receipts section.
-4. Target: 9/9. Anything at or above 8/9 with Bucket C intact is shippable; log the miss.
+**When a control fails, the corpus is a suspect — not just the model.**
+
+### Verifying deployed code matches committed code
+
+The Worker deploys manually (`npx wrangler deploy` from `chat-agent/`), so committed and deployed code can drift. As of 7.13.26 they match: `795b295` was deployed as version `b50594dc` and the 9/9 eval was run against it. Re-confirm before patching code you have not verified is what is in production.
 
 ### Standing gotchas (already documented in this repo, do not relearn)
 
