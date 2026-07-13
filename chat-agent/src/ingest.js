@@ -9,6 +9,25 @@ const EMBEDDING_MODEL = "@cf/baai/bge-base-en-v1.5"; // 768-dimensional embeddin
 // KV key holding the rendered catalog. Read by handleChat in index.js.
 export const CATALOG_KEY = "catalog";
 
+// Neural Gains Weekly launched with a personal-finance and investing lens and moved
+// to AI education for professionals in early 2026. Five published Steal My Prompt
+// volumes (1, 5, 6, 7, 20) still state the original framing in their prompt text —
+// Vol. 7 defines the 10-Minute Win as "a workflow for personal finance or investing
+// beginners." They stay published: they are accurate history, and rewriting an
+// archive to match current strategy would not be.
+//
+// But they are also the most authoritative on-site definition of what the newsletter
+// is, so retrieval surfaces them and the model repeats a positioning retired months
+// ago — faithfully, which is exactly the problem. index.js marks these excerpts
+// [ARCHIVE] so the model cannot read the stale claim without reading the correction.
+//
+// Detected here, per POST, rather than per chunk: "this piece reflects the old
+// framing" is a property of the piece. The positioning statement sits in the opening
+// chunk, but later chunks carry finance examples with no such statement — judging a
+// chunk on its own text alone leaves those unmarked.
+const RETIRED_POSITIONING =
+  /personal[- ]finance (?:and|or) investing|theme:\s*personal finance|pillars of neural gains|personal finance or investing beginners|personal-finance lens|use personal-finance examples/i;
+
 // Section order in the rendered catalog. Matches the values postType() returns.
 const SECTION_ORDER = [
   "Neural Gains Weekly",
@@ -23,7 +42,11 @@ export async function ingestAll(env) {
   const records = [];
   for (const post of posts) {
     const chunks = chunkText(post.plaintext || "");
-    chunks.forEach((text, index) => records.push({ post, index, text }));
+    // Judged once, on the whole post, then carried by every chunk it produces.
+    const archive = RETIRED_POSITIONING.test(post.plaintext || "");
+    chunks.forEach((text, index) =>
+      records.push({ post, index, text, archive }),
+    );
   }
 
   // Embed and upsert in batches. bge handles arrays of text in one call.
@@ -44,6 +67,9 @@ export async function ingestAll(env) {
         url: r.post.url,
         type: postType(r.post),
         published_at: r.post.published_at || "",
+        // True for posts that still state the retired personal-finance positioning.
+        // index.js marks these excerpts [ARCHIVE] before the model reads them.
+        archive: r.archive,
         // Vectorize caps metadata at 10 KiB/vector; keep the stored excerpt modest.
         text: r.text.slice(0, 4000),
       },
