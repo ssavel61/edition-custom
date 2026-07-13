@@ -1,9 +1,20 @@
 // Ingestion pipeline: pull posts from the Ghost Content API, split them into
 // chunks, embed each chunk with Workers AI, and upsert the vectors into
-// Vectorize. Runs on a daily cron and on demand via the authenticated
-// POST /ingest endpoint (see index.js).
+// Vectorize. Also writes a catalog of everything published to KV, which the
+// chat route injects into the system prompt (see index.js). Runs on a daily
+// cron and on demand via the authenticated POST /ingest endpoint.
 
 const EMBEDDING_MODEL = "@cf/baai/bge-base-en-v1.5"; // 768-dimensional embeddings
+
+// KV key holding the rendered catalog. Read by handleChat in index.js.
+export const CATALOG_KEY = "catalog";
+
+// Section order in the rendered catalog. Matches the values postType() returns.
+const SECTION_ORDER = [
+  "Neural Gains Weekly",
+  "Founder's Corner",
+  "Steal My Prompt",
+];
 
 export async function ingestAll(env) {
   const posts = await fetchAllPosts(env);
@@ -42,11 +53,74 @@ export async function ingestAll(env) {
     indexed += vectors.length;
   }
 
+  const catalog = buildCatalog(posts);
+  await env.CATALOG.put(CATALOG_KEY, catalog.text);
+
   return {
     posts: posts.length,
     chunks: indexed,
+    catalog: catalog.counts,
     indexed_at: new Date().toISOString(),
   };
+}
+
+// Render every post as a plain-text inventory: totals, newest and oldest per
+// section, and the full title list.
+//
+// Counts, dates and ordering are properties of the whole set, not of any single
+// chunk — "39 issues" appears nowhere in the text of any post. Similarity search
+// therefore cannot retrieve them at any top-K. The catalog puts those facts in
+// front of the model directly, so they never depend on retrieval.
+//
+// Titles and dates only. Body text stays in Vectorize, where it belongs.
+function buildCatalog(posts) {
+  const sections = new Map();
+  for (const post of posts) {
+    const type = postType(post);
+    if (!sections.has(type)) sections.set(type, []);
+    sections.get(type).push({
+      title: post.title || "(untitled)",
+      published_at: post.published_at || "",
+    });
+  }
+
+  // Known sections first, in a stable order; anything new lands after them.
+  const names = [
+    ...SECTION_ORDER.filter((s) => sections.has(s)),
+    ...[...sections.keys()].filter((s) => !SECTION_ORDER.includes(s)),
+  ];
+
+  const lines = [
+    "CATALOG — the complete inventory of everything published on the site.",
+    "This is authoritative and exhaustive: nothing exists that is not listed here.",
+    `Rebuilt: ${day(new Date().toISOString())}`,
+    `Total posts: ${posts.length}`,
+    "",
+  ];
+
+  const counts = {};
+  for (const name of names) {
+    const items = sections.get(name);
+    // Newest first. ISO-8601 dates sort correctly as strings.
+    items.sort((a, b) => b.published_at.localeCompare(a.published_at));
+    counts[name] = items.length;
+
+    lines.push(`${name} — ${items.length} posts`);
+    lines.push(`  Most recent: ${items[0].title} (${day(items[0].published_at)})`);
+    const oldest = items[items.length - 1];
+    lines.push(`  First ever: ${oldest.title} (${day(oldest.published_at)})`);
+    lines.push("  All titles, newest first:");
+    for (const item of items) {
+      lines.push(`    - ${item.title} (${day(item.published_at)})`);
+    }
+    lines.push("");
+  }
+
+  return { text: lines.join("\n"), counts };
+}
+
+function day(iso) {
+  return (iso || "").slice(0, 10) || "undated";
 }
 
 // Ghost 6 caps every Content API page at 100 results, so we page through.

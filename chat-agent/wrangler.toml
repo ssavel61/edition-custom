@@ -13,6 +13,13 @@ index_name = "mindovermoney-content"
 [ai]
 binding = "AI"
 
+# --- Catalog store (counts, dates and titles of every post) ---
+# Written by the index run, read on every chat. Create it once before first deploy:
+#   npx wrangler kv namespace create CATALOG
+[[kv_namespaces]]
+binding = "CATALOG"
+id = "cc1ea409fc594eecbfe6ff38f65da7b5"
+
 # --- Public, non-secret configuration ---
 # Secrets (ANTHROPIC_API_KEY, GHOST_CONTENT_API_KEY, INGEST_SECRET) are set
 # separately with `wrangler secret put` — never commit them here.
