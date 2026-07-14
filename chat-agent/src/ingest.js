@@ -1,9 +1,39 @@
 // Ingestion pipeline: pull posts from the Ghost Content API, split them into
 // chunks, embed each chunk with Workers AI, and upsert the vectors into
-// Vectorize. Runs on a daily cron and on demand via the authenticated
-// POST /ingest endpoint (see index.js).
+// Vectorize. Also writes a catalog of everything published to KV, which the
+// chat route injects into the system prompt (see index.js). Runs on a daily
+// cron and on demand via the authenticated POST /ingest endpoint.
 
 const EMBEDDING_MODEL = "@cf/baai/bge-base-en-v1.5"; // 768-dimensional embeddings
+
+// KV key holding the rendered catalog. Read by handleChat in index.js.
+export const CATALOG_KEY = "catalog";
+
+// Neural Gains Weekly launched with a personal-finance and investing lens and moved
+// to AI education for professionals in early 2026. Five published Steal My Prompt
+// volumes (1, 5, 6, 7, 20) still state the original framing in their prompt text —
+// Vol. 7 defines the 10-Minute Win as "a workflow for personal finance or investing
+// beginners." They stay published: they are accurate history, and rewriting an
+// archive to match current strategy would not be.
+//
+// But they are also the most authoritative on-site definition of what the newsletter
+// is, so retrieval surfaces them and the model repeats a positioning retired months
+// ago — faithfully, which is exactly the problem. index.js marks these excerpts
+// [ARCHIVE] so the model cannot read the stale claim without reading the correction.
+//
+// Detected here, per POST, rather than per chunk: "this piece reflects the old
+// framing" is a property of the piece. The positioning statement sits in the opening
+// chunk, but later chunks carry finance examples with no such statement — judging a
+// chunk on its own text alone leaves those unmarked.
+const RETIRED_POSITIONING =
+  /personal[- ]finance (?:and|or) investing|theme:\s*personal finance|pillars of neural gains|personal finance or investing beginners|personal-finance lens|use personal-finance examples/i;
+
+// Section order in the rendered catalog. Matches the values postType() returns.
+const SECTION_ORDER = [
+  "Neural Gains Weekly",
+  "Founder's Corner",
+  "Steal My Prompt",
+];
 
 export async function ingestAll(env) {
   const posts = await fetchAllPosts(env);
@@ -12,7 +42,11 @@ export async function ingestAll(env) {
   const records = [];
   for (const post of posts) {
     const chunks = chunkText(post.plaintext || "");
-    chunks.forEach((text, index) => records.push({ post, index, text }));
+    // Judged once, on the whole post, then carried by every chunk it produces.
+    const archive = RETIRED_POSITIONING.test(post.plaintext || "");
+    chunks.forEach((text, index) =>
+      records.push({ post, index, text, archive }),
+    );
   }
 
   // Embed and upsert in batches. bge handles arrays of text in one call.
@@ -33,6 +67,9 @@ export async function ingestAll(env) {
         url: r.post.url,
         type: postType(r.post),
         published_at: r.post.published_at || "",
+        // True for posts that still state the retired personal-finance positioning.
+        // index.js marks these excerpts [ARCHIVE] before the model reads them.
+        archive: r.archive,
         // Vectorize caps metadata at 10 KiB/vector; keep the stored excerpt modest.
         text: r.text.slice(0, 4000),
       },
@@ -42,11 +79,74 @@ export async function ingestAll(env) {
     indexed += vectors.length;
   }
 
+  const catalog = buildCatalog(posts);
+  await env.CATALOG.put(CATALOG_KEY, catalog.text);
+
   return {
     posts: posts.length,
     chunks: indexed,
+    catalog: catalog.counts,
     indexed_at: new Date().toISOString(),
   };
+}
+
+// Render every post as a plain-text inventory: totals, newest and oldest per
+// section, and the full title list.
+//
+// Counts, dates and ordering are properties of the whole set, not of any single
+// chunk — "39 issues" appears nowhere in the text of any post. Similarity search
+// therefore cannot retrieve them at any top-K. The catalog puts those facts in
+// front of the model directly, so they never depend on retrieval.
+//
+// Titles and dates only. Body text stays in Vectorize, where it belongs.
+function buildCatalog(posts) {
+  const sections = new Map();
+  for (const post of posts) {
+    const type = postType(post);
+    if (!sections.has(type)) sections.set(type, []);
+    sections.get(type).push({
+      title: post.title || "(untitled)",
+      published_at: post.published_at || "",
+    });
+  }
+
+  // Known sections first, in a stable order; anything new lands after them.
+  const names = [
+    ...SECTION_ORDER.filter((s) => sections.has(s)),
+    ...[...sections.keys()].filter((s) => !SECTION_ORDER.includes(s)),
+  ];
+
+  const lines = [
+    "CATALOG — the complete inventory of everything published on the site.",
+    "This is authoritative and exhaustive: nothing exists that is not listed here.",
+    `Rebuilt: ${day(new Date().toISOString())}`,
+    `Total posts: ${posts.length}`,
+    "",
+  ];
+
+  const counts = {};
+  for (const name of names) {
+    const items = sections.get(name);
+    // Newest first. ISO-8601 dates sort correctly as strings.
+    items.sort((a, b) => b.published_at.localeCompare(a.published_at));
+    counts[name] = items.length;
+
+    lines.push(`${name} — ${items.length} posts`);
+    lines.push(`  Most recent: ${items[0].title} (${day(items[0].published_at)})`);
+    const oldest = items[items.length - 1];
+    lines.push(`  First ever: ${oldest.title} (${day(oldest.published_at)})`);
+    lines.push("  All titles, newest first:");
+    for (const item of items) {
+      lines.push(`    - ${item.title} (${day(item.published_at)})`);
+    }
+    lines.push("");
+  }
+
+  return { text: lines.join("\n"), counts };
+}
+
+function day(iso) {
+  return (iso || "").slice(0, 10) || "undated";
 }
 
 // Ghost 6 caps every Content API page at 100 results, so we page through.
