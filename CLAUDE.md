@@ -1,6 +1,6 @@
 # CLAUDE.md
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+This is model-neutral project guidance. The filename remains `CLAUDE.md` for compatibility with existing tools and references; every AI collaborator must follow it. `AGENTS.md` is a discovery adapter only.
 
 ## What this repo is
 
@@ -71,7 +71,7 @@ Everything committed here — code, comments, commit messages, docs — is visib
 
 ### Owner context
 
-This repo belongs to the NGW dev ecosystem. Business context, strategy docs, and sibling projects (n8n research agent, Drive reorganization, podcast planning) live in the private `ngw-dev` repo. Read `ngw-dev/CLAUDE.md` for how to work with Santosh: sequential approval gates, one question at a time, plan mode before non-trivial changes, no deploys without explicit approval, receipts before claims.
+This repo belongs to the NGW dev ecosystem. Business context, strategy docs, and sibling projects (n8n research agent, Drive reorganization, podcast planning) live in the private `ngw-dev` repo. On Santosh's machine, `ngw-dev/WORKING_AGREEMENT.md` and `ngw-dev/context/ABOUT_SANTOSH.md` define the private cross-model working contract. Do not copy that private context here. This repository remains self-sufficient for public-repo safety, validation, and deployment boundaries.
 
 ### Neura eval: 4/9 → 9/9, SHIPPED 7.13.26
 
