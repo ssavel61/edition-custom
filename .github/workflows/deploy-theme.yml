@@ -1,12 +1,9 @@
 name: Deploy Ghost Theme
 
 on:
-  workflow_dispatch:        # ← enables the “Run workflow” button
-  push:
-    branches: [ main, master ]
-    paths:
-      - 'edition-clean/**'
-      - '.github/workflows/deploy-theme.yml'
+  # Saving or merging source must not change the live website.
+  # Run this workflow only for an explicitly approved production deployment.
+  workflow_dispatch:
 
 jobs:
   deploy:

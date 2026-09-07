@@ -13,7 +13,9 @@ The theme and the worker are deployed and versioned independently. Changing one 
 
 ## Deploy model (important)
 
-**Pushing to `main` auto-deploys the theme to the LIVE site.** `.github/workflows/deploy-theme.yml` triggers on pushes to `main`/`master` that touch `edition-clean/**`, validates with gscan (`--fatal`), zips `edition-clean/`, and uploads it to Ghost via `TryGhost/action-deploy-theme` (secrets `GHOST_ADMIN_API_URL` / `GHOST_ADMIN_API_KEY`). Feature branches do **not** deploy. Develop on a branch; merging to `main` is what goes live.
+**Theme deployment is manual in this revision.** `.github/workflows/deploy-theme.yml` has only a `workflow_dispatch` trigger. Saving, pushing or merging source does not deploy once this workflow revision is on GitHub. Earlier revisions auto-deploy qualifying pushes to `main`/`master`; verify the actual remote workflow before pushing an older branch.
+
+An explicitly approved manual run validates with gscan (`--fatal`), zips `edition-clean/`, and uploads it to Ghost via `TryGhost/action-deploy-theme` (secrets `GHOST_ADMIN_API_URL` / `GHOST_ADMIN_API_KEY`). Review the selected branch and exact artifact before running it. A commit or push approval does not authorize a workflow run. Theme deployment does not update Ghost routes, navigation or code injection; those are separately managed settings.
 
 - **CI does not run a build step.** The workflow zips `edition-clean/` *as-is*, so whatever is committed under `edition-clean/assets/built/` is what ships. Editing a `.hbs` template is sufficient on its own. Changing the theme's source CSS/JS requires rebuilding locally (`cd edition-clean && npx gulp build`) and committing the regenerated `assets/built/*`. To avoid that round-trip, the custom page templates (`archive.hbs`, the chat widget, etc.) carry their styling in inline `<style>` blocks rather than the compiled stylesheet.
 - Bump `edition-clean/package.json` `version` on meaningful theme changes (matches the existing commit history).
@@ -101,7 +103,7 @@ The Worker deploys manually (`npx wrangler deploy` from `chat-agent/`), so commi
 ### Standing gotchas (already documented in this repo, do not relearn)
 
 - Ghost 6 caps every Content API / `{{#get}}` query at 100 results regardless of `limit="all"`. Always paginate.
-- Theme auto-deploys on push to `main`; the Worker does NOT. Backend changes require manual `npx wrangler deploy`.
+- Theme deployment requires an approved manual workflow run in this revision; the Worker separately requires `npx wrangler deploy`. Neither deployment follows automatically from a source commit.
 - Re-index overwrites by deterministic chunk ID; shrinking posts can leave stale chunks until a full rebuild.
 - The one external dependency that silently kills Neura is Anthropic API credit. Low-balance alert should be set in the Anthropic console.
 

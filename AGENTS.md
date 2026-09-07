@@ -7,7 +7,7 @@ On Santosh's machine, if `../ngw-dev/WORKING_AGREEMENT.md` exists, read it and `
 Before doing work:
 
 1. Read `CLAUDE.md` completely.
-2. Confirm whether the task touches the auto-deployed theme or the separately deployed Worker.
+2. Confirm whether the task touches the theme or the separately deployed Worker.
 3. Preserve the public-repository privacy and secret boundaries.
 4. Use the documented validation and deployment gates.
 
