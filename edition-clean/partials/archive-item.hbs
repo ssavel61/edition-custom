@@ -1,5 +1,6 @@
 {{!-- Single archive list row. Expects a post as the current context. --}}
 <li class="archive-item"
+    data-published-at="{{date published_at format="YYYY-MM-DDTHH:mm:ss.SSS[Z]" timezone="UTC"}}" data-article="true"
     data-tags="{{#foreach tags visibility="all"}}{{slug}} {{/foreach}}">
   <a class="archive-item-link" href="{{url}}">
     <div class="archive-item-top">

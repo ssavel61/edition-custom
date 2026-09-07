@@ -1,0 +1,4 @@
+{{#get "posts" limit="100" page=page include="tags" order="published_at desc"}}
+{{#foreach posts}}{{> archive-item}}{{/foreach}}
+{{#if pagination.next}}{{> archive-pages page=pagination.next}}{{/if}}
+{{/get}}

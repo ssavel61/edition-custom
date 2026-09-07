@@ -199,6 +199,7 @@
       <button class="ngw-filter-btn" data-filter="newsletter">Neural Gains Weekly</button>
       <button class="ngw-filter-btn" data-filter="founders-corner">Founder's Corner</button>
       <button class="ngw-filter-btn" data-filter="prompt-library">Steal My Prompt</button>
+<button class="ngw-filter-btn" data-filter="eaol">Explore AI Out Loud</button>
     </div>
 
     {{!--
@@ -214,72 +215,14 @@
       Pages beyond the available posts simply render nothing. Add another
       {{#get ... page="N"}} block here if the archive ever exceeds 500 posts.
     --}}
-    <ul class="archive-list">
-      {{#get "posts" limit="100" page="1" include="tags" order="published_at desc"}}
-        {{#foreach posts}}{{> archive-item}}{{/foreach}}
-      {{/get}}
-      {{#get "posts" limit="100" page="2" include="tags" order="published_at desc"}}
-        {{#foreach posts}}{{> archive-item}}{{/foreach}}
-      {{/get}}
-      {{#get "posts" limit="100" page="3" include="tags" order="published_at desc"}}
-        {{#foreach posts}}{{> archive-item}}{{/foreach}}
-      {{/get}}
-      {{#get "posts" limit="100" page="4" include="tags" order="published_at desc"}}
-        {{#foreach posts}}{{> archive-item}}{{/foreach}}
-      {{/get}}
-      {{#get "posts" limit="100" page="5" include="tags" order="published_at desc"}}
-        {{#foreach posts}}{{> archive-item}}{{/foreach}}
-      {{/get}}
+    <p id="episode-status" class="episode-status" role="status"></p><p class="episode-fallback"><a href="https://www.youtube.com/@exploreAIoutloud/playlists">Browse episodes on YouTube ↗</a></p><ul class="archive-list">
+      {{> archive-pages page=1}}
     </ul>
     <div class="archive-empty">No posts found for this filter.</div>
 
   </div>{{!-- end archive-card --}}
 
   {{!-- Client-side filtering --}}
-  <script>
-    document.addEventListener('DOMContentLoaded', function() {
-      var buttons = document.querySelectorAll('.ngw-filter-btn');
-      var items = document.querySelectorAll('.archive-item');
-      var empty = document.querySelector('.archive-empty');
 
-      if (!buttons.length || !items.length) return;
-
-      buttons.forEach(function(btn) {
-        btn.addEventListener('click', function() {
-          var filter = this.getAttribute('data-filter');
-          var visibleCount = 0;
-
-          buttons.forEach(function(b) { b.classList.remove('active'); });
-          this.classList.add('active');
-
-          items.forEach(function(item) {
-            var tags = (item.getAttribute('data-tags') || '').toLowerCase();
-            var show = false;
-
-            if (filter === 'all') {
-              show = true;
-            } else if (filter === 'newsletter') {
-              show = tags.indexOf('hash-founders-corner') === -1 && tags.indexOf('hash-prompt-library') === -1;
-            } else if (filter === 'founders-corner') {
-              show = tags.indexOf('hash-founders-corner') > -1;
-            } else if (filter === 'prompt-library') {
-              show = tags.indexOf('hash-prompt-library') > -1;
-            }
-
-            if (show) {
-              item.classList.remove('hidden');
-              visibleCount++;
-            } else {
-              item.classList.add('hidden');
-            }
-          });
-
-          if (empty) {
-            empty.style.display = visibleCount === 0 ? 'block' : 'none';
-          }
-        });
-      });
-    });
-  </script>
 
 </main>

@@ -1,7 +1,101 @@
 {{!< default}}
-
-{{!-- Homepage-specific styles --}}
 <style>
+
+  body.home-template,
+  body.home-template .site {
+    background: #2c353c !important;
+  }
+
+  body.home-template .gh-head {
+    background: #2c353c !important;
+    border: none !important;
+    border-bottom: 4px solid rgba(138,191,197,0.3) !important;
+    box-shadow: none !important;
+    outline: none !important;
+  }
+  body.home-template .gh-head-inner,
+  body.home-template .gh-head-brand,
+  body.home-template .gh-head-brand-wrapper,
+  body.home-template .gh-head-menu,
+  body.home-template .gh-head-actions {
+    background: #2c353c !important;
+    border: none !important;
+    box-shadow: none !important;
+    outline: none !important;
+  }
+
+  body.home-template .gh-head::before,
+  body.home-template .gh-head::after,
+  body.home-template .gh-head-inner::before,
+  body.home-template .gh-head-inner::after,
+  body.home-template .gh-head-brand::before,
+  body.home-template .gh-head-brand::after,
+  body.home-template .gh-head-brand-wrapper::after,
+  body.home-template .gh-head-menu::before,
+  body.home-template .gh-head-menu::after {
+    display: none !important;
+    border: none !important;
+  }
+
+  body.home-template .gh-head a,
+  body.home-template .gh-head-menu a,
+  body.home-template .gh-head-menu .nav a {
+    color: rgba(255,255,255,0.85) !important;
+  }
+  body.home-template .gh-head a:hover,
+  body.home-template .gh-head-menu a:hover {
+    color: #f3e2ae !important;
+  }
+
+  body.home-template .gh-head-actions .gh-btn,
+  body.home-template .gh-head-actions .gh-primary-btn,
+  body.home-template .gh-head-actions .gh-head-btn {
+    color: #2c353c !important;
+    background: #f3e2ae !important;
+    border-color: #f3e2ae !important;
+  }
+  body.home-template .gh-head-actions .gh-btn:hover,
+  body.home-template .gh-head-actions .gh-primary-btn:hover,
+  body.home-template .gh-head-actions .gh-head-btn:hover {
+    background: #e8d49a !important;
+    border-color: #e8d49a !important;
+  }
+
+  body.home-template .gh-head-logo,
+  body.home-template .gh-head-logo a,
+  body.home-template .gh-head-logo img {
+    color: #fff !important;
+  }
+
+  body.home-template .gh-search,
+  body.home-template .gh-head-actions a:not(.gh-btn):not(.gh-primary-btn):not(.gh-head-btn),
+  body.home-template .gh-head-link {
+    color: rgba(255,255,255,0.85) !important;
+  }
+
+  body.home-template .site-content {
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+
+  body.home-template .gh-foot,
+  body.home-template .gh-foot-inner {
+    background: #2c353c !important;
+    border: none !important;
+  }
+  body.home-template .gh-foot a,
+  body.home-template .gh-copyright,
+  body.home-template .gh-powered-by,
+  body.home-template .gh-powered-by a,
+  body.home-template .gh-foot-menu a {
+    color: rgba(255,255,255,0.5) !important;
+  }
+  body.home-template .gh-foot a:hover,
+  body.home-template .gh-foot-menu a:hover {
+    color: rgba(255,255,255,0.8) !important;
+  }
+
+
   /* ===== HOMEPAGE LAYOUT ===== */
   .ngw-home .site-content { padding: 0 !important; }
 
@@ -222,7 +316,7 @@
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.05em;
-    color: #8abfc5;
+    color: #46727b;
     margin: 0 0 0.6rem;
   }
   .ngw-featured-card h3 {
@@ -235,7 +329,7 @@
   .ngw-featured-card p {
     font-size: 1.3rem;
     line-height: 1.5;
-    color: #5a6872;
+    color: #2c353c;
     margin: 0;
     flex: 1;
   }
@@ -359,6 +453,10 @@
   .ngw-latest-cta a:hover {
     text-decoration: underline;
   }
+  @media (max-width: 520px) {
+    .ngw-latest-item { flex-direction: column; gap: 6px; }
+    .ngw-latest-item a { margin-right: 0; overflow-wrap: anywhere; }
+  }
 
   /* ===== SUPPORT SECTION ===== */
   .ngw-support {
@@ -396,173 +494,65 @@
   .ngw-support-btn:hover {
     background: #e8d49a;
   }
+
+.ngw-signup { max-width: 510px; margin: 0 auto; text-align: left; }
+.ngw-signup label { display: block; color: #e1e7e9; font-size: 1.4rem; margin-bottom: 8px; }
+.ngw-signup .ngw-hero-form { max-width: none; margin-bottom: 10px; }
+.ngw-hero-form input[type="email"] { min-width: 0; min-height: 50px; flex: 1 1 auto; }
+.ngw-hero-form input[type="email"]::placeholder { color: #c2ccd2; }
+.ngw-hero-form button { flex: 0 0 auto; }
+.ngw-hero-form button:disabled { cursor: wait; }
+.ngw-hero-proof { color: #c2ccd2; text-align: center; }
+.ngw-feedback { color: #fff; background: #36454d; border-left: 3px solid #8abfc5; padding: 12px 14px; margin: 12px 0 0; font-size: 1.4rem; line-height: 1.5; }
+.ngw-feedback[data-kind="error"] { border-color: #f3e2ae; }
+.ngw-value-card { display: flex; flex-direction: column; }
+.ngw-card-type { color: #52616b; font-size: 1.2rem; font-weight: 700; letter-spacing: .07em; text-transform: uppercase; margin-bottom: 14px; }
+.ngw-value-card p { flex-grow: 1; }
+.ngw-benefits + .ngw-value { padding-top: 0; }
+.ngw-benefits .ngw-value-card:hover { transform: none; box-shadow: none; }
+.ngw-card-link { display: inline-block; margin-top: 20px; color: #2c353c; font-size: 1.4rem; font-weight: 700; text-decoration: underline; text-underline-offset: 4px; }
+.ngw-card-link:is(button) { align-self: flex-start; border: 0; padding: 0; background: none; cursor: pointer; font-family: inherit; }
+.ngw-featured-sub { color: #c2ccd2; }
+
 </style>
-
 <main class="site-main ngw-home">
-
-  {{!-- ===== HERO SECTION ===== --}}
-  <section class="ngw-hero">
-    <div class="ngw-hero-inner">
-      <h1 class="ngw-hero-tagline">Practical AI education for professionals who <em>build</em>.</h1>
-      <p class="ngw-hero-sub">No Hype. No Fear. Just Workflows.</p>
-
-      {{#if @site.members_enabled}}
-        {{#unless @site.members_invite_only}}
-          {{#unless @member}}
-            <form class="ngw-hero-form" data-members-form>
-              <input type="email" name="email" data-members-email placeholder="Your email address" required>
-              <button type="submit" aria-label="Subscribe">
-                <span class="default">Subscribe</span>
-                <span class="loader">{{> "icons/loader"}}</span>
-                <span class="success">Email sent</span>
-              </button>
-            </form>
-          {{/unless}}
-        {{/unless}}
-      {{/if}}
-
-      <p class="ngw-hero-proof">Every Tuesday. Free. 10 minutes. No spam.</p>
-    </div>
-  </section>
-
-  {{!-- ===== VALUE PROPOSITION ===== --}}
-  <section class="ngw-value">
-    <div class="ngw-value-inner">
-      <h2 class="ngw-value-heading">What you get every week</h2>
-      <div class="ngw-value-grid">
-
-        <div class="ngw-value-card">
-          <div class="ngw-value-icon">📚</div>
-          <h3>Learn AI Concepts</h3>
-          <p>Each issue unpacks one AI concept with zero jargon. No CS degree required. Just clear explanations tied to real work scenarios you'll recognize from your own week.</p>
-        </div>
-
-        <div class="ngw-value-card">
-          <div class="ngw-value-icon">⚡</div>
-          <h3>Steal Real Prompts</h3>
-          <p>The exact prompts I use every week. The model, the context, what worked, what didn't. Copy them. Tweak them. Ship them. No theory. Just receipts.</p>
-        </div>
-
-        <div class="ngw-value-card">
-          <div class="ngw-value-icon">🛠️</div>
-          <h3>Build Alongside Me</h3>
-          <p>A non-technical professional building with AI in public. Every win, every failure, every workflow documented. You skip the mistakes. You keep the shortcuts.</p>
-        </div>
-
-      </div>
-    </div>
-  </section>
-
-  {{!-- ===== FEATURED CONTENT ===== --}}
-  <section class="ngw-featured">
-    <div class="ngw-featured-inner">
-      <h2 class="ngw-featured-heading">Start with these</h2>
-      <p class="ngw-featured-sub">Not sure where to begin? These three posts capture what Neural Gains Weekly is all about.</p>
-
-      <div class="ngw-featured-grid">
-        {{!-- Shows the posts you mark as "Featured" in Ghost Admin (up to 3).
-              To curate this section: open a post → Settings → toggle "Feature
-              this post". No code changes needed. --}}
-        {{#get "posts" filter="featured:true" limit="3" include="tags" order="published_at desc" as |featured|}}
-          {{#foreach featured}}
-            <div class="ngw-featured-card">
-              <a href="{{url}}">
-                {{#if feature_image}}
-                  <img class="ngw-featured-img" src="{{img_url feature_image size='m'}}" alt="{{title}}" loading="lazy">
-                {{/if}}
-                <div class="ngw-featured-body">
-                  <div class="ngw-featured-tag">{{#has tag="#founders-corner"}}Founder's Corner{{else}}{{#has tag="#prompt-library"}}Steal My Prompt{{else}}Neural Gains Weekly{{/has}}{{/has}}</div>
-                  <h3>{{title}}</h3>
-                  <p>{{#if custom_excerpt}}{{custom_excerpt}}{{else}}{{excerpt words="26"}}{{/if}}</p>
-                </div>
-              </a>
-            </div>
-          {{/foreach}}
-        {{/get}}
-      </div>
-
-      <style>
-        .ngw-featured-ask { text-align: center; margin-top: 2.75rem; }
-        .ngw-ask-ai-title { font-size: 2rem; font-weight: 800; margin: 0 0 .5rem; color: #fff; }
-        .ngw-ask-ai-note { margin: 0 auto 1.3rem; max-width: 560px; font-size: 1.4rem; line-height: 1.5; color: rgba(255,255,255,0.78); }
-        .ngw-ai-chips { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; margin: 0 auto 1.5rem; max-width: 580px; }
-        .ngw-ai-chip {
-          background: rgba(255,255,255,0.08); color: #fff;
-          border: 1px solid rgba(255,255,255,0.25); border-radius: 100px;
-          padding: 8px 16px; font-size: 1.3rem; font-family: inherit; cursor: pointer;
-          transition: background .15s ease, border-color .15s ease;
-        }
-        .ngw-ai-chip:hover { background: rgba(138,191,197,0.22); border-color: #8abfc5; }
-        .ngw-ask-ai-btn {
-          display: inline-flex; align-items: center; gap: 8px;
-          background: #8abfc5; color: #2c353c; border: none; border-radius: 100px;
-          padding: 13px 30px; font-size: 1.6rem; font-weight: 700; cursor: pointer;
-          font-family: inherit; transition: transform .15s ease, background .15s ease;
-        }
-        .ngw-ask-ai-btn:hover { transform: translateY(-2px); background: #7ab2b9; }
-      </style>
-      <div class="ngw-featured-ask">
-        <h3 class="ngw-ask-ai-title">New here? Just ask.</h3>
-        <p class="ngw-ask-ai-note">Meet Neura, your personalized AI assistant. Tell it what you're working on and it points you to the exact posts that help — with links. Tap a question to try it, or ask your own:</p>
-        <div class="ngw-ai-chips">
-          <button type="button" class="ngw-ai-chip" onclick="window.MindOverMoneyChat && window.MindOverMoneyChat.ask('Where should I start if I am new to using AI at work?')">Where do I start?</button>
-          <button type="button" class="ngw-ai-chip" onclick="window.MindOverMoneyChat && window.MindOverMoneyChat.ask('Give me one AI prompt I can use today.')">Give me a prompt</button>
-          <button type="button" class="ngw-ai-chip" onclick="window.MindOverMoneyChat && window.MindOverMoneyChat.ask('How do I get my team to actually adopt AI?')">Team adoption</button>
-        </div>
-        <button type="button" class="ngw-ask-ai-btn" onclick="window.MindOverMoneyChat && window.MindOverMoneyChat.open()">
-          <span aria-hidden="true">✨</span> Ask Neura
-        </button>
-      </div>
-    </div>
-  </section>
-
-  {{!-- ===== ABOUT SECTION ===== --}}
-  <section class="ngw-about">
-    <div class="ngw-about-inner">
-      {{#get "authors" filter="slug:santosh" limit="1"}}
-        {{#foreach authors}}
-          {{#if profile_image}}
-            <img class="ngw-about-photo" src="{{img_url profile_image size='m'}}" alt="{{name}}" loading="lazy">
-          {{/if}}
-        {{/foreach}}
-      {{/get}}
-      <div class="ngw-about-text">
-        <h2>Built by Santosh Savel</h2>
-        <p>Over 13 years in the healthcare industry across project management, sales, product, technology, and operations. In 2025, I stopped reading about AI and started building with it. No coding background. No CS degree. Just a belief that non-technical professionals deserved better than hype and fear.</p>
-        <a class="ngw-about-link" href="/about/">Read the full story →</a>
-      </div>
-    </div>
-  </section>
-
-  {{!-- ===== LATEST ISSUES ===== --}}
-  <section class="ngw-latest">
-    <div class="ngw-latest-inner">
-      <h2 class="ngw-latest-heading">Latest issues</h2>
-      <ul class="ngw-latest-list">
-        {{#get "posts" limit="6" include="tags" order="published_at desc"}}
-          {{#foreach posts}}
-            <li class="ngw-latest-item">
-              <a href="{{url}}">{{title}}</a>
-              <span class="ngw-latest-date">{{date published_at format="MMM D, YYYY"}}</span>
-            </li>
-          {{/foreach}}
-        {{/get}}
-      </ul>
-      <div class="ngw-latest-cta">
-        <a href="/archive/">Browse the full archive →</a>
-      </div>
-    </div>
-  </section>
-
-  {{!-- ===== SUPPORT SECTION ===== --}}
-  <section class="ngw-support">
-    <div class="ngw-support-inner">
-      <h2>Support the work</h2>
-      <p>Neural Gains Weekly is free and always will be. If this work helps you build with AI, consider supporting it so I can keep going.</p>
-      <a class="ngw-support-btn" href="/support/">See how you can help</a>
-    </div>
-  </section>
-
+<section class="ngw-hero"><div class="ngw-hero-inner">
+<h1 class="ngw-hero-tagline">Make AI Useful In <em>Your Everyday Work.</em></h1>
+<p class="ngw-hero-sub">No Hype. No Fear. Just Workflows.</p>
+<div class="ngw-signup" id="signup">{{> ngw-signup form_id="home"}}</div>
+</div></section>
+<section class="ngw-value ngw-benefits" aria-labelledby="benefits-title"><div class="ngw-value-inner">
+<h2 class="ngw-value-heading" id="benefits-title">What you get every week</h2>
+<div class="ngw-value-grid">
+<article class="ngw-value-card"><div class="ngw-value-icon" aria-hidden="true">📚</div><h3>Learn AI Concepts</h3><p>Each issue unpacks one AI concept with zero jargon. No CS degree required. Just clear explanations tied to real work scenarios you'll recognize from your own week.</p></article>
+<article class="ngw-value-card"><div class="ngw-value-icon" aria-hidden="true">⚡</div><h3>Steal Real Prompts</h3><p>The exact prompts I use every week. The model, the context, what worked, what didn't. Copy them. Tweak them. Ship them. No theory. Just receipts.</p></article>
+<article class="ngw-value-card"><div class="ngw-value-icon" aria-hidden="true">🛠️</div><h3>Build Alongside Me</h3><p>A non-technical professional building with AI in public. Every win, every failure, every workflow documented. You skip the mistakes. You keep the shortcuts.</p></article>
+</div></div></section>
+<section class="ngw-value" aria-labelledby="ways-title"><div class="ngw-value-inner"><h2 class="ngw-value-heading" id="ways-title">Read. Watch. Explore. Put it to work.</h2>
+<div class="ngw-value-grid">
+<article class="ngw-value-card"><div class="ngw-card-type">The newsletter</div><h3>Neural Gains Weekly</h3><p>Understand an AI concept, try a practical prompt, and see what Santosh is learning as he builds.</p><a class="ngw-card-link" href="/how-to-evaluate-ai-tool-safety-at-work/">Read a recent issue →</a></article>
+<article class="ngw-value-card" id="podcast"><div class="ngw-card-type">The podcast</div><h3>Explore AI Out Loud</h3><p>Santosh and Brandon compare their experiences using AI: what worked, what didn’t, and what they’re trying next.</p><a class="ngw-card-link" href="/podcast/">Explore the podcast →</a></article>
+<article class="ngw-value-card" id="neura"><div class="ngw-card-type">Your guide to the archive</div><h3>Neura</h3><p>Looking for something specific? Ask a question and follow Neura’s links to relevant published articles.</p><button class="ngw-card-link" type="button" data-open-neura>Ask Neura →</button></article>
+</div></div></section>
+<section class="ngw-featured"><div class="ngw-featured-inner"><h2 class="ngw-featured-heading">Start with these</h2><p class="ngw-featured-sub">Not sure where to begin? These three posts capture what Neural Gains Weekly is all about.</p>
+<div class="ngw-featured-grid">
+{{#get "posts" filter="featured:true" limit="3" include="tags" order="published_at desc"}}{{#foreach posts}}
+<article class="ngw-featured-card"><a href="{{url}}"><div class="ngw-featured-body">
+<div class="ngw-featured-tag">{{#has tag="#founders-corner"}}Founder's Corner{{else}}{{#has tag="#prompt-library"}}Steal My Prompt{{else}}Neural Gains Weekly{{/has}}{{/has}}</div>
+<h3>{{title}}</h3><p>{{#if custom_excerpt}}{{custom_excerpt}}{{else}}{{excerpt words="26"}}{{/if}}</p>
+</div></a></article>
+{{/foreach}}{{/get}}
+</div></div></section>
+<section class="ngw-latest" aria-labelledby="latest-title"><div class="ngw-latest-inner">
+<h2 class="ngw-latest-heading" id="latest-title">Latest updates</h2>
+<ul class="ngw-latest-list" id="latest-updates">
+{{#get "posts" limit="4" order="published_at desc"}}{{#foreach posts}}
+<li class="ngw-latest-item" data-article="true" data-published-at="{{date published_at format="YYYY-MM-DDTHH:mm:ss.SSS[Z]" timezone="UTC"}}">
+<a href="{{url}}">{{title}}</a><time class="ngw-latest-date" datetime="{{date published_at format="YYYY-MM-DDTHH:mm:ss.SSS[Z]" timezone="UTC"}}">{{date published_at format="MMM D, YYYY"}}</time>
+</li>
+{{/foreach}}{{/get}}
+</ul>
+<p id="episode-status" class="visually-hidden" role="status" aria-live="polite"></p>
+<div class="ngw-latest-cta"><a href="/archive/">Browse the full archive →</a></div>
+</div></section>
 </main>
-
-{{#contentFor "body_class"}}{{#if @member}} logged-in{{/if}}{{/contentFor}}
