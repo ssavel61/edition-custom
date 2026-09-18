@@ -21,6 +21,10 @@ An explicitly approved manual run validates with gscan (`--fatal`), zips `editio
 - Bump `edition-clean/package.json` `version` on meaningful theme changes (matches the existing commit history).
 - The `chat-agent/` directory sits *outside* `edition-clean/`, so it is never included in the theme zip.
 
+## Podcast catalog (v1.3.0, September 17, 2026)
+
+The theme reads the public episode catalog at `https://eaol-episode-catalog.mindovermoney-ai.workers.dev/catalog` for the podcast hub, Archive and homepage. This is a separate service from Neura. It checks approved full releases every five minutes; visible pages refresh every minute. Spotify and Apple show subscription links are active on the podcast hub. Episode-specific links come from the catalog. There are no API keys or private transcripts in the theme. Theme source v1.3.0 matches the activated release; committing or pushing does not redeploy it.
+
 ## Ghost 6 gotcha: the 100-result cap
 
 Ghost 6 caps **every** `{{#get}}` query and Content API request at 100 results — `limit="all"` is silently truncated to 100. This recurs across the codebase; the fix is always to paginate:

@@ -220,7 +220,8 @@
     status.hidden=false; status.textContent='Loading episodes…';
     try {
       const url=new URL(endpoint,location.origin);
-      if (url.origin !== location.origin || url.username || url.password) throw new Error('invalid_source');
+      const hosted = 'https://eaol-episode-catalog.mindovermoney-ai.workers.dev/catalog';
+      if ((url.origin !== location.origin && url.href !== hosted) || url.username || url.password) throw new Error('invalid_source');
       const response=await fetch(url,{signal:local.signal,cache:'no-store',credentials:'omit',redirect:'error'});
       if (!response.ok || Number(response.headers.get('content-length'))>500000) throw new Error('unavailable');
       const text=await response.text(); if (text.length>500000) throw new Error('oversized');
@@ -236,4 +237,6 @@
   applyFilter(); load();
   // Reconciliation integrations may request a refresh without attaching another filter controller.
   document.addEventListener('eaol:refresh',load);
+  setInterval(() => { if (!document.hidden) load(); }, 60000);
+  document.addEventListener('visibilitychange', () => { if (!document.hidden) load(); });
 })();
