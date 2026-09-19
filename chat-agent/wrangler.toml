@@ -1,6 +1,8 @@
 name = "mindovermoney-chat"
 main = "src/index.js"
 compatibility_date = "2024-11-01"
+# Keep the approved episode authority in private deployment configuration.
+keep_vars = true
 
 # --- Vector database (stores embeddings of your content) ---
 # Create it once before first deploy:
@@ -21,12 +23,20 @@ binding = "CATALOG"
 id = "cc1ea409fc594eecbfe6ff38f65da7b5"
 
 # --- Public, non-secret configuration ---
-# Secrets (ANTHROPIC_API_KEY, GHOST_CONTENT_API_KEY, INGEST_SECRET) are set
+# Secrets (ANTHROPIC_API_KEY, GHOST_CONTENT_API_KEY, INGEST_SECRET, EPISODE_INGEST_SECRET) are set
 # separately with `wrangler secret put` — never commit them here.
 [vars]
+# EPISODE_RELEASES is managed privately; absent authority disables episode intake/retrieval.
+VECTORIZE_METADATA_MODE = "all"
+
 GHOST_API_URL = "https://www.mindovermoney.ai"
 ALLOWED_ORIGIN = "https://www.mindovermoney.ai"
 
 # --- Scheduled re-index: daily at 06:00 UTC ---
 [triggers]
 crons = ["0 6 * * *"]
+
+# Read-only HTTP entrypoint of the existing public episode catalog.
+[[services]]
+binding = "EPISODE_CATALOG"
+service = "eaol-episode-catalog"

@@ -117,8 +117,8 @@ function buildCatalog(posts) {
   ];
 
   const lines = [
-    "CATALOG — the complete inventory of everything published on the site.",
-    "This is authoritative and exhaustive: nothing exists that is not listed here.",
+    "ARTICLE CATALOG — the complete inventory of Ghost articles only.",
+    "This inventory does not include podcast episodes; use the separate podcast inventory for those.",
     `Rebuilt: ${day(new Date().toISOString())}`,
     `Total posts: ${posts.length}`,
     "",

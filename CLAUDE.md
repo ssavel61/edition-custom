@@ -23,7 +23,7 @@ An explicitly approved manual run validates with gscan (`--fatal`), zips `editio
 
 ## Podcast catalog (v1.3.0, September 17, 2026)
 
-The theme reads the public episode catalog at `https://eaol-episode-catalog.mindovermoney-ai.workers.dev/catalog` for the podcast hub, Archive and homepage. This is a separate service from Neura. It checks approved full releases every five minutes; visible pages refresh every minute. Spotify and Apple show subscription links are active on the podcast hub. Episode-specific links come from the catalog. There are no API keys or private transcripts in the theme. Theme source v1.3.0 matches the activated release; committing or pushing does not redeploy it.
+The theme reads the public episode catalog at `https://eaol-episode-catalog.mindovermoney-ai.workers.dev/catalog` for the podcast hub, Archive and homepage. This is a separate service from Neura. It checks approved full releases every five minutes; visible pages refresh every minute. Spotify and Apple show subscription links are active on the podcast hub. Episode-specific links come from the catalog. There are no API keys or private transcripts in the theme. Current theme source v1.3.3 matches the activated release; committing or pushing does not redeploy it.
 
 ## Ghost 6 gotcha: the 100-result cap
 
@@ -39,13 +39,27 @@ Ghost 6 caps **every** `{{#get}}` query and Content API request at 100 results �
 - **Content types are derived from internal tags**, not separate collections: tag slug `hash-founders-corner` → Founder's Corner, `hash-prompt-library` → Steal My Prompt, everything else → Newsletter. Client-side filter buttons (e.g. on `archive.hbs`) match on these slugs.
 - Brand colors: dark `#2c353c`, teal accent `#8abfc5`.
 
+## Podcast divider spacing (v1.3.3, live September 19, 2026)
+
+The podcast opening has 16px top padding to keep its artwork below the navigation divider. Exact deployed-file readback and desktop/mobile spacing checks pass. Neura session behavior is unchanged from v1.3.2.
+
+## Neura conversation continuity (v1.3.2, live September 19, 2026)
+
+The widget keeps up to 20 recent exchanges, citation links, the draft and panel state in origin/tab-scoped `sessionStorage`. Reload, same-tab page navigation and back/forward restore the session. Completed exchanges are reused within the existing Worker context limits. Navigation during streaming preserves a visibly interrupted reply with manual Retry; it never automatically resends. New chat clears the conversation and invalidates pending callbacks. Invalid/unavailable storage degrades to memory-only chat. Restored text is escaped and source links are HTTPS-only.
+
+Theme-only update activated with exact deployed-file readback. All 64 local tests, Ghost fatal compatibility checks and live same-tab navigation/reload/reset checks pass. No new backend storage or Worker deployment was needed. Test with `node --test chat-agent/test/*.test.mjs`.
+
+## Neura show links (v1.3.1, September 19, 2026)
+
+Common watch/listen/follow questions use a curated show directory before model calls. The widget displays six navigation destinations under “Links”; article citations retain the four-source limit. The Worker and widget are deployed independently and both are required for this behavior. Episode transcript identity, readiness and current-catalog gating remain intact.
+
 ## chat-agent architecture (RAG)
 
 A single Cloudflare Worker (`chat-agent/`, deploy with `npx wrangler deploy`):
 
 - `src/index.js` — routes: `POST /chat` (embed question → Vectorize search → Claude Haiku 4.5 answer, streamed back as SSE with cited sources), `POST /ingest` (auth'd via `x-ingest-secret`), and a daily cron — both run the ingest pipeline.
 - `src/ingest.js` — Ghost Content API → chunk → embed (Workers AI `@cf/baai/bge-base-en-v1.5`, 768-dim) → upsert to Vectorize. Vector index must be created at 768 dims / cosine.
-- Bindings (`wrangler.toml`): `VECTORIZE`, `AI`. Secrets (set via `wrangler secret put`, never committed): `ANTHROPIC_API_KEY`, `GHOST_CONTENT_API_KEY`, `INGEST_SECRET`.
+- Bindings (`wrangler.toml`): `VECTORIZE`, `AI`, `CATALOG`, `EPISODE_CATALOG` (read-only HTTP access to the public catalog). Secrets: `ANTHROPIC_API_KEY`, `GHOST_CONTENT_API_KEY`, `INGEST_SECRET`, and separate `EPISODE_INGEST_SECRET`; never commit their values. Approved episode authority is managed privately and preserved with `keep_vars = true`.
 - The Worker calls the Anthropic Messages API over raw `fetch` (no SDK dependency) using model `claude-haiku-4-5`.
 - The site widget is `edition-clean/partials/chat-widget.hbs`, included from `default.hbs`. It is **inert until `CHAT_ENDPOINT` is set** to the deployed Worker's `/chat` URL — safe to ship before the backend exists.
 
@@ -102,7 +116,7 @@ The posts stay published — they are accurate history. Instead, `ingest.js` jud
 
 ### Verifying deployed code matches committed code
 
-The Worker deploys manually (`npx wrangler deploy` from `chat-agent/`), so committed and deployed code can drift. As of 7.13.26 they match: `795b295` was deployed as version `b50594dc` and the 9/9 eval was run against it. Re-confirm before patching code you have not verified is what is in production.
+The Worker deploys manually (`npx wrangler deploy` from `chat-agent/`), so committed and deployed code can drift. Historical baseline: on 7.13.26 commit `795b295` matched Worker `b50594dc` and the 9/9 eval. Current September 19 deployment is Worker `26578599-69ed-4682-be02-0917b8548f88`, including approved episode retrieval and the show directory. Source and deployment must be verified independently; a Git commit does not redeploy the Worker. Re-confirm current deployment/source receipts before further changes.
 
 ### Standing gotchas (already documented in this repo, do not relearn)
 
@@ -114,6 +128,6 @@ The Worker deploys manually (`npx wrangler deploy` from `chat-agent/`), so commi
 ### Deferred / parked (do not build unprompted)
 
 - Instant indexing via Ghost publish webhook. `POST /ingest` is authenticated by the `x-ingest-secret` header; Ghost webhooks cannot send custom headers, so this needs a `?token=` query-param path added.
-- Podcast/YouTube transcript ingestion (Phase 2). NOTE: the podcast is no longer deferred to 2027 — Season Zero was committed on 7.11.26 for September to late October 2026. Transcript ingestion remains parked regardless; do not build it unprompted.
+- Automatic future podcast transcript intake remains deferred. The separately approved September 19 repair enables governed per-episode intake; each new transcript still needs explicit identity, approval, verification and activation.
 - Learning-plans guided mode (Phase 3).
 - Embedding upgrade to Voyage (only if retrieval quality demands it; Bucket C says it does not).

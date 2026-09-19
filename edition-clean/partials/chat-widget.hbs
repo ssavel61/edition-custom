@@ -37,6 +37,10 @@
   .mom-chat-header p { margin: 2px 0 0; font-size: 1.2rem; color: rgba(255,255,255,0.8) !important; }
   .mom-chat-close { background: none; border: none; color: #fff; cursor: pointer;
     font-size: 2rem; line-height: 1; opacity: .8; }
+  .mom-chat-actions { display:flex; align-items:center; gap:12px; }
+  .mom-chat-reset { background:none; border:1px solid rgba(255,255,255,.6); border-radius:6px; color:#fff; padding:4px 7px; cursor:pointer; font-size:1.2rem; }
+  .mom-chat-notice { margin-top:6px; color:#4b5e6a; font-size:1.3rem; }
+  .mom-chat-retry { margin-top:6px; padding:5px 10px; background:#fff; color:#2c353c; border:1px solid #8abfc5; border-radius:6px; cursor:pointer; }
   .mom-chat-close:hover { opacity: 1; }
 
   .mom-chat-body { flex: 1; overflow-y: auto; padding: 16px; background: #f4f6f7; }
@@ -78,180 +82,161 @@
       <h3>Neura AI Assistant</h3>
       <p>Your Content Guide</p>
     </div>
-    <button class="mom-chat-close" id="mom-chat-close" aria-label="Close">&times;</button>
+    <div class="mom-chat-actions"><button class="mom-chat-reset" id="mom-chat-reset" type="button">New chat</button>
+    <button class="mom-chat-close" id="mom-chat-close" aria-label="Close">&times;</button></div>
   </div>
   <div class="mom-chat-body" id="mom-chat-body"></div>
   <div class="mom-chat-input">
-    <textarea id="mom-chat-text" rows="1" placeholder="e.g. Where should I start with AI agents?"></textarea>
+    <textarea id="mom-chat-text" rows="1" maxlength="2000" placeholder="e.g. Where should I start with AI agents?"></textarea>
     <button class="mom-chat-send" id="mom-chat-send">Send</button>
   </div>
 </div>
 
 <script>
 (function () {
-  // 👉 Paste your deployed Worker chat URL here, then commit. Until it's set,
-  //    the widget stays hidden.
   var CHAT_ENDPOINT = "https://mindovermoney-chat.mindovermoney-ai.workers.dev/chat";
   if (!CHAT_ENDPOINT) return;
-
+  var KEY = "mom-neura-session-v1";
   var launcher = document.getElementById("mom-chat-launcher");
   var panel = document.getElementById("mom-chat-panel");
   var body = document.getElementById("mom-chat-body");
   var input = document.getElementById("mom-chat-text");
   var sendBtn = document.getElementById("mom-chat-send");
-  var history = [];
-  var busy = false;
+  var busy = false, controller = null, generation = 0, saveTimer = null;
+  var state = { version: 1, open: false, draft: "", messages: [] };
 
-  launcher.hidden = false;
-
-  function open(prefill) {
-    panel.classList.add("open");
-    if (!body.childNodes.length) {
-      addBot("Hi, I'm Neura — ask me anything about Santosh's writing on AI and I'll point you to the most useful pieces. What are you working on?");
-    }
-    if (prefill) { input.value = prefill; send(); }
-    else { input.focus(); }
+  function safeSources(sources) {
+    if (!Array.isArray(sources)) return [];
+    return sources.slice(0, 6).filter(function (s) {
+      try { return s && typeof s.title === "string" && new URL(s.url).protocol === "https:"; }
+      catch (_) { return false; }
+    }).map(function (s) { return { title: s.title.slice(0, 300), url: String(s.url).slice(0, 2000), type: typeof s.type === "string" ? s.type.slice(0, 100) : "", kind: s.kind === "navigation" ? "navigation" : "source" }; });
   }
-  function close() { panel.classList.remove("open"); }
-
-  // Let other parts of the site (e.g. the homepage buttons) open the chat,
-  // optionally asking a question immediately.
-  window.MindOverMoneyChat = {
-    open: function () { open(); },
-    ask: function (q) { open(q); },
-    close: close,
-    toggle: function () { panel.classList.contains("open") ? close() : open(); },
-  };
-
-  launcher.addEventListener("click", function () {
-    panel.classList.contains("open") ? close() : open();
-  });
-  document.getElementById("mom-chat-close").addEventListener("click", close);
-
-  input.addEventListener("input", function () {
-    input.style.height = "auto";
-    input.style.height = Math.min(input.scrollHeight, 100) + "px";
-  });
-  input.addEventListener("keydown", function (e) {
-    if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); send(); }
-  });
-  sendBtn.addEventListener("click", send);
-
-  function el(cls, html) {
-    var d = document.createElement("div");
-    d.className = cls;
-    if (html != null) d.innerHTML = html;
-    return d;
-  }
-  function escapeHtml(s) {
-    return String(s).replace(/[&<>"']/g, function (c) {
-      return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c];
-    });
-  }
-  // Minimal, safe Markdown -> HTML: escape first, then **bold**, bullets, breaks.
-  function renderMarkdown(text) {
-    var html = escapeHtml(text);
-    html = html.replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>");
-    html = html.replace(/(^|\n)\s*[-*]\s+/g, "$1• ");
-    html = html.replace(/\n{2,}/g, "<br><br>").replace(/\n/g, "<br>");
-    return html;
-  }
-  function addUser(text) {
-    var m = el("mom-chat-msg user");
-    m.appendChild(el("bubble", escapeHtml(text)));
-    body.appendChild(m);
-    body.scrollTop = body.scrollHeight;
-  }
-  function addBot(text) {
-    var m = el("mom-chat-msg bot");
-    var b = el("bubble", escapeHtml(text || ""));
-    m.appendChild(b);
-    body.appendChild(m);
-    body.scrollTop = body.scrollHeight;
-    return b;
-  }
-
-  function send() {
-    var text = input.value.trim();
-    if (!text || busy) return;
-    addUser(text);
-    history.push({ role: "user", content: text });
-    input.value = "";
-    input.style.height = "auto";
-    stream();
-  }
-
-  function stream() {
-    busy = true;
-    sendBtn.disabled = true;
-    var bubble = addBot("…");
-    var answer = "";
-    var sources = [];
-
-    fetch(CHAT_ENDPOINT, {
-      method: "POST",
-      headers: { "content-type": "application/json" },
-      body: JSON.stringify({ messages: history }),
-    })
-      .then(function (res) {
-        if (!res.ok || !res.body) throw new Error("Request failed (" + res.status + ")");
-        var reader = res.body.getReader();
-        var decoder = new TextDecoder();
-        var buf = "";
-
-        function pump() {
-          return reader.read().then(function (r) {
-            if (r.done) return finish();
-            buf += decoder.decode(r.value, { stream: true });
-            var parts = buf.split("\n\n");
-            buf = parts.pop();
-            parts.forEach(handleEvent);
-            return pump();
-          });
-        }
-
-        function handleEvent(block) {
-          var ev = "", data = "";
-          block.split("\n").forEach(function (line) {
-            if (line.indexOf("event:") === 0) ev = line.slice(6).trim();
-            else if (line.indexOf("data:") === 0) data += line.slice(5).trim();
-          });
-          if (!data) return;
-          if (ev === "sources") {
-            try { sources = JSON.parse(data); } catch (e) {}
-          } else if (ev === "token") {
-            try {
-              answer += JSON.parse(data);
-              bubble.innerHTML = renderMarkdown(answer);
-              body.scrollTop = body.scrollHeight;
-            } catch (e) {}
-          } else if (ev === "error") {
-            bubble.textContent = answer || "Sorry, something went wrong. Please try again.";
-          }
-        }
-
-        function finish() {
-          if (!answer) bubble.textContent = "I couldn't find anything on that yet. Try rephrasing, or browse the archive.";
-          history.push({ role: "assistant", content: answer });
-          renderSources(bubble.parentNode, sources);
-          busy = false;
-          sendBtn.disabled = false;
-        }
-
-        return pump();
-      })
-      .catch(function (err) {
-        bubble.textContent = "Sorry, I'm having trouble connecting right now.";
-        busy = false;
-        sendBtn.disabled = false;
+  function restore() {
+    try {
+      var raw = window.sessionStorage.getItem(KEY);
+      if (!raw) return;
+      if (raw.length > 250000) throw Error("state limit");
+      var saved = JSON.parse(raw);
+      if (!saved || saved.version !== 1 || !Array.isArray(saved.messages) || saved.messages.length > 40 || saved.messages.length % 2 !== 0) throw Error("invalid state");
+      var messages = saved.messages.map(function (m, i) {
+        if (!m || m.role !== (i % 2 ? "assistant" : "user") || (m.role === "user" && m.status !== "complete") || !["user", "assistant"].includes(m.role) || typeof m.content !== "string" || !["complete", "pending", "interrupted", "error"].includes(m.status)) throw Error("invalid message");
+        return { role: m.role, content: m.content.slice(0, m.role === "user" ? 2000 : 16000), status: m.status === "pending" ? "interrupted" : m.status, sources: m.status === "complete" ? safeSources(m.sources) : [] };
       });
+      state = { version: 1, open: saved.open === true, draft: typeof saved.draft === "string" ? saved.draft.slice(0, 2000) : "", messages: messages };
+    } catch (_) { try { window.sessionStorage.removeItem(KEY); } catch (_) {} }
   }
+  function save() {
+    clearTimeout(saveTimer); saveTimer = null;
+    state.draft = input.value.slice(0, 2000);
+    // Keep complete turn boundaries and a bounded recent conversation.
+    while (state.messages.length > 40 || JSON.stringify(state).length > 240000) state.messages.splice(0, 2);
+    try { window.sessionStorage.setItem(KEY, JSON.stringify(state)); } catch (_) { /* Memory-only chat still works. */ }
+  }
+  function saveSoon() { if (!saveTimer) saveTimer = setTimeout(save, 150); }
+  function open(prefill) {
+    state.open = true; panel.classList.add("open"); save();
+    if (prefill) { input.value = prefill; send(); } else input.focus();
+  }
+  function close() { state.open = false; panel.classList.remove("open"); save(); }
+  function reset() {
+    generation++; if (controller) controller.abort(); controller = null; busy = false; sendBtn.disabled = false;
+    state.messages = []; input.value = ""; input.style.height = "auto";
+    save(); renderConversation(); input.focus();
+  }
+  window.MindOverMoneyChat = { open: function () { open(); }, ask: function (q) { open(q); }, close: close, toggle: function () { state.open ? close() : open(); } };
+  launcher.addEventListener("click", function () { state.open ? close() : open(); });
+  document.getElementById("mom-chat-close").addEventListener("click", close);
+  document.getElementById("mom-chat-reset").addEventListener("click", reset);
+  input.addEventListener("input", function () { input.style.height = "auto"; input.style.height = Math.min(input.scrollHeight, 100) + "px"; saveSoon(); });
+  input.addEventListener("keydown", function (e) { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); send(); } });
+  sendBtn.addEventListener("click", send);
+  window.addEventListener("pagehide", function () {
+    generation++; if (controller) controller.abort(); controller = null; busy = false; sendBtn.disabled = false;
+    state.messages.forEach(function (m) { if (m.status === "pending") m.status = "interrupted"; });
+    save();
+  });
+  // Back/forward cache can restore this document without re-running its script.
+  window.addEventListener("pageshow", function (e) {
+    if (!e.persisted) return;
+    state = { version: 1, open: false, draft: "", messages: [] }; restore();
+    input.value = state.draft; panel.classList.toggle("open", state.open); renderConversation();
+  });
+  document.addEventListener("visibilitychange", function () { if (document.visibilityState === "hidden") save(); });
+
+  function el(cls, html) { var d = document.createElement("div"); d.className = cls; if (html != null) d.innerHTML = html; return d; }
+  function escapeHtml(s) { return String(s).replace(/[&<>"']/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]; }); }
+  function renderMarkdown(text) { return escapeHtml(text).replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>").replace(/(^|\n)\s*[-*]\s+/g, "$1• ").replace(/\n{2,}/g, "<br><br>").replace(/\n/g, "<br>"); }
+  function renderConversation() {
+    body.textContent = "";
+    if (!state.messages.length) { var welcome = el("mom-chat-msg bot"); welcome.appendChild(el("bubble", "Hi, I'm Neura — ask me anything about Santosh's writing on AI and I'll point you to the most useful pieces. What are you working on?")); body.appendChild(welcome); }
+    state.messages.forEach(function (m, i) {
+      var row = el("mom-chat-msg " + (m.role === "user" ? "user" : "bot"));
+      var bubble = el("bubble", m.role === "user" ? escapeHtml(m.content) : renderMarkdown(m.content || (m.status === "pending" ? "…" : "")));
+      row.appendChild(bubble); body.appendChild(row);
+      if (m.role === "assistant" && m.status === "complete") renderSources(row, m.sources);
+      if (m.role === "assistant" && (m.status === "interrupted" || m.status === "error")) {
+        row.appendChild(el("mom-chat-notice", m.status === "interrupted" ? "This reply was interrupted. Retry when you're ready." : "The reply couldn't finish. Please try again."));
+        if (i === state.messages.length - 1 && i > 0 && state.messages[i - 1].role === "user") {
+          var retry = document.createElement("button"); retry.className = "mom-chat-retry"; retry.textContent = "Retry reply";
+          retry.addEventListener("click", function () { if (!busy) { m.status = "pending"; m.content = ""; m.sources = []; save(); stream(m, state.messages[i - 1].content); } }); row.appendChild(retry);
+        }
+      }
+    });
+    body.scrollTop = body.scrollHeight;
+  }
+  function requestMessages(question) {
+    var messages = [];
+    for (var i = 0; i + 1 < state.messages.length; i += 2) {
+      var u = state.messages[i], a = state.messages[i + 1];
+      if (u.role === "user" && a.role === "assistant" && a.status === "complete") messages.push({role:"user",content:u.content},{role:"assistant",content:a.content});
+    }
+    messages.push({role:"user",content:question});
+    while (new TextEncoder().encode(JSON.stringify({messages:messages})).length > 22000 && messages.length > 1) messages.splice(0, 2);
+    return messages;
+  }
+  function send() {
+    var text = input.value.trim().slice(0, 2000); if (!text || busy) return;
+    state.messages.push({role:"user",content:text,status:"complete",sources:[]});
+    var reply = {role:"assistant",content:"",status:"pending",sources:[]}; state.messages.push(reply);
+    input.value = ""; input.style.height = "auto"; save(); stream(reply, text);
+  }
+  function stream(reply, question) {
+    busy = true; sendBtn.disabled = true; controller = new AbortController(); var token = ++generation;
+    renderConversation(); var bubble = body.lastChild.firstChild; var done = false, failed = false, buf = "";
+    fetch(CHAT_ENDPOINT, {method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify({messages:requestMessages(question)}),signal:controller.signal})
+      .then(function (res) {
+        if (!res.ok || !res.body) throw Error("Request failed");
+        var reader = res.body.getReader(), decoder = new TextDecoder();
+        function event(block) {
+          if (token !== generation) return;
+          var ev = "", data = ""; block.split("\n").forEach(function (line) { if (line.indexOf("event:") === 0) ev = line.slice(6).trim(); else if (line.indexOf("data:") === 0) data += line.slice(5).trim(); });
+          if (!data) return;
+          if (ev === "sources") { try { reply.sources = safeSources(JSON.parse(data)); } catch (_) {} }
+          if (ev === "token") { var part = JSON.parse(data); if (typeof part !== "string" || reply.content.length + part.length > 16000) throw Error("Invalid reply"); reply.content += part; bubble.innerHTML = renderMarkdown(reply.content); body.scrollTop = body.scrollHeight; saveSoon(); }
+          if (ev === "error") failed = true;
+          if (ev === "done") done = true;
+        }
+        function pump() { return reader.read().then(function (r) {
+          if (token !== generation) { reader.cancel().catch(function () {}); return; }
+          if (r.done) { if (!done || failed || !reply.content) throw Error("Incomplete reply"); return; }
+          buf += decoder.decode(r.value, {stream:true}); if (buf.length > 100000) throw Error("Invalid stream");
+          var parts = buf.split("\n\n"); buf = parts.pop(); parts.forEach(event); return pump();
+        }); }
+        return pump();
+      }).then(function () { if (token === generation) settle("complete"); })
+      .catch(function () { if (token === generation) settle("error"); });
+    function settle(status) { reply.status = status; if (status !== "complete") { reply.sources = []; if (controller) controller.abort(); } busy = false; sendBtn.disabled = false; controller = null; save(); renderConversation(); }
+  }
+
+  restore(); input.value = state.draft; launcher.hidden = false; panel.classList.toggle("open", state.open); renderConversation(); save();
 
   function renderSources(msgEl, sources) {
     if (!sources || !sources.length) return;
     var wrap = el("mom-chat-sources");
-    wrap.appendChild(el("label", "Sources"));
-    sources.slice(0, 4).forEach(function (s) {
+    var navigation = sources.every(function (s) { return s.kind === "navigation"; });
+    wrap.appendChild(el("label", navigation ? "Links" : "Sources"));
+    sources.slice(0, navigation ? 6 : 4).forEach(function (s) {
       var a = document.createElement("a");
       a.href = s.url;
       a.textContent = s.title + (s.type ? " — " + s.type : "");

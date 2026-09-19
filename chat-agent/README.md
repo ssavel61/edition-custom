@@ -63,7 +63,7 @@ Worker's chat URL into `CHAT_ENDPOINT`:
 var CHAT_ENDPOINT = "https://mindovermoney-chat.<your-subdomain>.workers.dev/chat";
 ```
 
-Commit + push; the theme auto-deploys and the chat bubble appears on the site.
+Theme deployment is a separately approved manual workflow. A commit or push does not deploy the theme.
 (While `CHAT_ENDPOINT` is empty the widget stays hidden, so the theme is safe
 to ship before the Worker exists.)
 
@@ -92,3 +92,25 @@ and Workers AI. Each chat is a Claude Haiku 4.5 call (~$1 / 1M input,
 | `wrangler.toml` | Worker config: bindings, vars, cron |
 | `src/index.js` | HTTP routes + streaming chat handler |
 | `src/ingest.js` | Ghost → chunk → embed → Vectorize pipeline |
+
+
+## Approved episode transcripts
+
+Neura can answer questions about released podcast episodes using privately ingested program transcripts. It does not publish transcript files or offer a transcript-download route. The theme is unchanged.
+
+- `src/episodes.js` binds each transcript hash and final-media hash to an approved episode/video identity. The deployment-controlled `EPISODE_RELEASES` manifest is maintained privately, outside this public repository. `keep_vars = true` preserves the current manifest on ordinary code deployments; an absent manifest disables episode intake and retrieval. Never overwrite that authority with a sample during deployment.
+- `EPISODE_CATALOG` is an HTTP service binding to the existing public episode catalog. Same-account workers.dev calls need that binding. Unavailable or withdrawn releases cannot supply episode evidence.
+- `POST /episode-ingest` and `POST /episode-verify` require `x-ingest-secret` matching the separate `EPISODE_INGEST_SECRET`. The original `INGEST_SECRET` remains scoped to article ingestion. Keep both values out of source, command arguments, logs and chat.
+- Import while the exact revision is disabled. Verify every expected vector ID, namespace and text hash, then similarity-query readiness. Enable only that verified revision. Vector reads use batches of 20. Mutations are asynchronous, so upload acknowledgement alone is not activation proof.
+- Specific episode questions combine semantic similarity and subject-word matching within approved revision namespaces. Missing episodes abstain instead of substituting old announcements. Full-transcript requests are refused.
+- Existing articles stay in the default namespace (omit `namespace`; an empty string is distinct). Metadata mode is `all`. The daily article cron preserves separate episode readiness keys.
+- Program-only coverage excludes opening/closing narration. Citations point to the public video; timestamps are not asserted. Corrected or withdrawn revisions are excluded logically; physical cleanup of old vectors needs an explicit exact-ID operation. Model refusal is not an absolute guarantee against reconstruction through repeated questions.
+
+For another episode, approve its delivered transcript and media identity, update private authority disabled, import, verify, enable and run scoped acceptance checks. Website publication does not automatically ingest a transcript.
+
+Local checks: `npm test` (mocked providers; no live model calls). Deployment, transcript transfer and paid live checks require their own authorized scope. Capture the previous Worker version before deployment for rollback. Operational approvals and live receipts belong in private project records.
+
+
+## Show navigation links
+
+`src/directory.js` serves common “where can I watch/listen/follow?” questions directly from the curated show directory, before model calls. Keep these show-level links aligned with the published podcast hub. Navigation SSE sources carry `kind: navigation`; the widget renders six links under “Links”, while ordinary article sources keep the four-link limit. This feature requires coordinated Worker and widget deployment. Validate both components and keep their rollback versions separately.
