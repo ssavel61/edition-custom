@@ -23,7 +23,7 @@ An explicitly approved manual run validates with gscan (`--fatal`), zips `editio
 
 ## Podcast catalog (v1.3.0, September 17, 2026)
 
-The theme reads the public episode catalog at `https://eaol-episode-catalog.mindovermoney-ai.workers.dev/catalog` for the podcast hub, Archive and homepage. This is a separate service from Neura. It checks approved full releases every five minutes; visible pages refresh every minute. Spotify and Apple show subscription links are active on the podcast hub. Episode-specific links come from the catalog. There are no API keys or private transcripts in the theme. Current theme source v1.3.3 matches the activated release; committing or pushing does not redeploy it.
+The theme reads the public episode catalog at `https://eaol-episode-catalog.mindovermoney-ai.workers.dev/catalog` for the podcast hub, Archive and homepage. This is a separate service from Neura. It checks approved full releases every five minutes; visible pages refresh every minute. Spotify and Apple show subscription links are active on the podcast hub. Episode-specific links come from the catalog. There are no API keys or private transcripts in the theme. Current theme source v1.3.4 matches the activated release; committing or pushing does not redeploy it.
 
 ## Ghost 6 gotcha: the 100-result cap
 
@@ -38,6 +38,10 @@ Ghost 6 caps **every** `{{#get}}` query and Content API request at 100 results �
 - Curated landing pages (`archive.hbs`, `founders-corner.hbs`, `prompt-library.hbs`) each pull an editable Ghost **Page** by slug via `{{#get "pages" filter="slug:..."}}` and render its title/body alongside a programmatic post list — so the copy is editable in Ghost Admin while the layout lives in the theme.
 - **Content types are derived from internal tags**, not separate collections: tag slug `hash-founders-corner` → Founder's Corner, `hash-prompt-library` → Steal My Prompt, everything else → Newsletter. Client-side filter buttons (e.g. on `archive.hbs`) match on these slugs.
 - Brand colors: dark `#2c353c`, teal accent `#8abfc5`.
+
+## Post signup callouts (v1.3.4, live September 20, 2026)
+
+Native signup fields stack at 600px and below. Posts with an authored signup card suppress the theme footer; older posts without one retain a footer for anonymous visitors when public signup is enabled. The automatic mid-post signup injection is removed. Footer copy describes alternating Tuesday issues and podcast takeaways. Exact 113-file deployed readback matches the approved archive; mobile checks passed for all three current issue drafts. No Worker change.
 
 ## Podcast divider spacing (v1.3.3, live September 19, 2026)
 

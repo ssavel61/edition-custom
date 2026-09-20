@@ -45,3 +45,35 @@
 
 /* Before the first published conversation, show the owner-approved launch teaser. */
 .episode-teaser{padding:36px;border:1px solid #c9dcdf;border-top:3px solid #8abfc5;border-radius:8px;background:#eef3f4}.episode-teaser h2{margin:0 0 14px;color:#2c353c;font-size:32px;line-height:1.2;letter-spacing:-.6px}.episode-teaser h2 time{white-space:nowrap}.episode-teaser>p:not(.eyebrow){font-size:16px;line-height:1.65;color:#2c353c;margin:0 0 24px}.episode-teaser .youtube-primary{background:#2c353c;color:#fff;white-space:normal}.episode-teaser .youtube-primary img{width:22px;height:22px}@media(max-width:600px){.episode-teaser{padding:26px 20px}.episode-teaser h2{font-size:27px}}
+
+/* Authored signup cards take precedence over the legacy post footer. */
+.site-main:has(.gh-content .kg-signup-card) .ngw-post-cta {
+  display: none;
+}
+
+/* Let native Ghost signup fields shrink without forcing text under the button. */
+.gh-content .kg-signup-card-input {
+  min-width: 0;
+  flex: 1 1 auto;
+}
+.gh-content .kg-signup-card-button {
+  flex-shrink: 0;
+}
+@media (max-width: 600px) {
+  .gh-content .kg-signup-card-fields {
+    flex-direction: column;
+    gap: 6px;
+  }
+  .gh-content .kg-signup-card-input {
+    width: 100%;
+    margin: 0;
+  }
+  .gh-content .kg-signup-card-button {
+    width: 100%;
+    min-height: 46px;
+    justify-content: center;
+    white-space: normal;
+    line-height: 1.3;
+    padding: 12px;
+  }
+}
