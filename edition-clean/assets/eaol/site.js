@@ -205,7 +205,7 @@
       }
       applyFilter();
     }
-    if (feed) feed.replaceChildren(...episodes.map(hubCard));
+    if (feed) feed.replaceChildren(...episodes.slice(0, 2).map(hubCard));
     document.querySelectorAll('.episode-fallback').forEach(node => { node.hidden = episodes.length > 0 || showTeaser; });
   }
 
