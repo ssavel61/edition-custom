@@ -4,16 +4,21 @@
         {{> "content" width="wide"}}
     {{/post}}
 
-    {{!-- Fallback for posts without an authored signup card. --}}
+    {{!-- Fallback newsletter invitation for posts without an authored signup card (anonymous visitors only). --}}
     {{#if @site.members_enabled}}{{#unless @site.members_invite_only}}{{#unless @member}}
     <section class="ngw-post-cta gh-canvas">
         <div class="ngw-post-cta-box">
             <p class="ngw-post-cta-headline">Make AI useful in your everyday work.</p>
-            <p class="ngw-post-cta-sub">One email every Tuesday, alternating NGW issues and podcast takeaways.</p>
-            <a class="ngw-post-cta-btn" href="#/portal/signup/free">Subscribe for free</a>
+            <p class="ngw-post-cta-sub">Neural Gains Weekly is free. One email every Tuesday: a full issue one week, the best lesson from the new podcast episode the next.</p>
+            {{> ngw-signup form_id="post"}}
         </div>
     </section>
     {{/unless}}{{/unless}}{{/if}}
+
+    {{!-- Podcast follow block for every reader, members included. Hidden when the post already carries a podcast card. --}}
+    <section class="ngw-post-follow gh-canvas">
+        {{> eaol-follow variant="compact" id="post-follow" heading="Prefer to watch or listen?" intro="Explore AI Out Loud is the video podcast Santosh co-hosts with Brandon Ratay. New episodes every other Tuesday."}}
+    </section>
 
     {{#if @custom.show_related_posts}}
         {{> "related-posts"}}
@@ -25,8 +30,9 @@
 
 {{!-- Post CTA styles --}}
 <style>
-  /* End-of-post CTA */
-  .ngw-post-cta {
+  /* End-of-post newsletter invitation */
+  .ngw-post-cta,
+  .ngw-post-follow {
     max-width: 720px;
     margin: 0 auto;
     padding: 0 1.5rem;
@@ -37,7 +43,7 @@
     border-radius: 8px;
     padding: 2rem 2.5rem;
     text-align: left;
-    margin: 2rem 0 3rem;
+    margin: 2rem 0 2rem;
   }
   .ngw-post-cta-headline {
     font-family: var(--gh-font-heading, var(--font-sans));
@@ -48,22 +54,18 @@
   }
   .ngw-post-cta-sub {
     font-size: 1.4rem;
-    color: #666;
+    color: #53626a;
     margin: 0 0 1.2rem;
     line-height: 1.5;
   }
-  .ngw-post-cta-btn {
-    display: inline-block;
-    padding: 10px 24px;
-    background: #f3e2ae;
-    color: #2c353c;
-    font-weight: 700;
-    font-size: 1.4rem;
-    border-radius: 6px;
-    text-decoration: none;
-    transition: background 0.2s;
+  .ngw-post-cta-box .ngw-signup-form { margin: 0; }
+  .ngw-post-follow { margin-bottom: 3rem; }
+
+  /* Posts that already carry the authored podcast card do not repeat the follow block. */
+  .site-main:has(.gh-content a[href*="exploreAIoutloud"]) .ngw-post-follow,
+  .site-main:has(.gh-content a[href*="open.spotify.com/show/"]) .ngw-post-follow {
+    display: none;
   }
-  .ngw-post-cta-btn:hover { background: #e8d49a; }
 
   @media (max-width: 600px) {
     .ngw-post-cta-box {

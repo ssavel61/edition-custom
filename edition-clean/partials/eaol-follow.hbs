@@ -1,0 +1,13 @@
+{{!-- Explore AI Out Loud follow block. Single source for the platform links and their labels.
+     Params: variant ("full" or "compact"), id, heading, intro. --}}
+<section class="eaol-follow eaol-follow-{{variant}}" aria-labelledby="{{id}}-title">
+  <p class="eyebrow">The podcast</p>
+  <h2 id="{{id}}-title" class="eaol-follow-heading">{{heading}}</h2>
+  <p class="eaol-follow-intro">{{intro}}</p>
+  <nav class="eaol-follow-links" aria-label="Explore AI Out Loud platforms">
+    <a href="https://www.youtube.com/@exploreAIoutloud?sub_confirmation=1" target="_blank" rel="noopener noreferrer"><img src="{{asset "eaol/icons/youtube.png"}}" width="22" height="22" alt="">Subscribe on YouTube</a>
+    <a href="https://open.spotify.com/show/0348nx4ylmWesSj02ECRjY" target="_blank" rel="noopener noreferrer"><img src="{{asset "eaol/icons/spotify.png"}}" width="22" height="22" alt="">Follow on Spotify</a>
+    <a href="https://podcasts.apple.com/us/podcast/explore-ai-out-loud/id6812370441" target="_blank" rel="noopener noreferrer"><img src="{{asset "eaol/icons/applepodcasts.png"}}" width="22" height="22" alt="">Follow on Apple Podcasts</a>
+  </nav>
+  <a class="eaol-follow-more" href="/podcast/">Latest episodes and the show →</a>
+</section>

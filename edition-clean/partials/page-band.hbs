@@ -1,0 +1,25 @@
+{{!-- Closing band for Ghost pages rendered by page.hbs. Newsletter first, podcast second.
+     Params: form_id (also used for element ids), show_newsletter (false on the pre-confirmation welcome page). --}}
+<section class="ngw-page-band" aria-label="Subscribe and follow">
+  <div class="ngw-page-band-inner">
+  {{#if show_newsletter}}
+    {{#if @member}}
+    <div class="ngw-page-band-news">
+      <p class="eyebrow">Neural Gains Weekly</p>
+      <h2 class="ngw-page-band-heading">You're subscribed. Next: the podcast.</h2>
+      <p class="ngw-page-band-sub">Your next email arrives Tuesday. Until then, watch or listen to Explore AI Out Loud.</p>
+    </div>
+    {{else}}
+    <div class="ngw-page-band-news">
+      <p class="eyebrow">Neural Gains Weekly</p>
+      <h2 class="ngw-page-band-heading">Start with the newsletter.</h2>
+      <p class="ngw-page-band-sub">Free. One email every Tuesday: a full issue one week, a short podcast note the next.</p>
+      {{> ngw-signup form_id=form_id}}
+    </div>
+    {{/if}}
+    {{> eaol-follow variant="full" id=form_id heading="Explore AI Out Loud" intro="An AI podcast for people who actually have to use this stuff at work. Santosh and Brandon try things, show what helped and what fell short, and talk through what you can try next. New episodes every other Tuesday."}}
+  {{else}}
+    {{> eaol-follow variant="full" id=form_id heading="While you wait for the confirmation email" intro="Meet Explore AI Out Loud, the podcast behind the Tuesday episode notes. Santosh and Brandon try things, show what helped and what fell short, and talk through what you can try next. New episodes every other Tuesday."}}
+  {{/if}}
+  </div>
+</section>

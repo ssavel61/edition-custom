@@ -2,7 +2,8 @@
 <form class="ngw-signup-form" data-members-form="signup">
   <label for="{{form_id}}-email">Your email address</label>
   <div class="ngw-signup-controls"><input id="{{form_id}}-email" name="email" type="email" data-members-email autocomplete="email" placeholder="you@example.com" aria-describedby="{{form_id}}-error" required>
-  <button type="submit"><span class="default">Subscribe to NGW</span><span class="loader">Sending…</span><span class="success">Email sent</span></button></div>
+  <button type="submit"><span class="default">Subscribe for free</span><span class="loader">Sending…</span><span class="success">Email sent</span></button></div>
+  {{#if note}}<p class="signup-help">{{note}}</p>{{/if}}
   <p class="signup-success" role="status" aria-live="polite">Check your inbox and click the confirmation link to finish signing up.</p>
   <p id="{{form_id}}-error" class="signup-error" data-members-error role="alert"></p>
 </form>

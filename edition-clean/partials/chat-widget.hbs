@@ -169,7 +169,7 @@
   function renderMarkdown(text) { return escapeHtml(text).replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>").replace(/(^|\n)\s*[-*]\s+/g, "$1• ").replace(/\n{2,}/g, "<br><br>").replace(/\n/g, "<br>"); }
   function renderConversation() {
     body.textContent = "";
-    if (!state.messages.length) { var welcome = el("mom-chat-msg bot"); welcome.appendChild(el("bubble", "Hi, I'm Neura — ask me anything about Santosh's writing on AI and I'll point you to the most useful pieces. What are you working on?")); body.appendChild(welcome); }
+    if (!state.messages.length) { var welcome = el("mom-chat-msg bot"); welcome.appendChild(el("bubble", "Hi, I'm Neura. Ask me anything about Santosh's writing or the Explore AI Out Loud episodes, and I'll point you to the most useful pieces. What are you working on?")); body.appendChild(welcome); }
     state.messages.forEach(function (m, i) {
       var row = el("mom-chat-msg " + (m.role === "user" ? "user" : "bot"));
       var bubble = el("bubble", m.role === "user" ? escapeHtml(m.content) : renderMarkdown(m.content || (m.status === "pending" ? "…" : "")));
