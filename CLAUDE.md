@@ -21,7 +21,7 @@ An explicitly approved manual run validates with gscan (`--fatal`), zips `editio
 - Bump `edition-clean/package.json` `version` on meaningful theme changes (matches the existing commit history).
 - The `chat-agent/` directory sits *outside* `edition-clean/`, so it is never included in the theme zip.
 
-## Subscribe and follow refresh (v1.4.0 live October 3, 2026; v1.4.1 source only, NOT deployed)
+## Subscribe and follow refresh (v1.4.0 and v1.4.1, live October 3, 2026)
 
 Copy and conversion pass after the podcast launch and the move to alternating Tuesday emails (full NGW issue one week, podcast episode email the next, one Ghost newsletter). Newsletter leads on shared surfaces, podcast second; podcast leads only on the hub.
 
@@ -34,7 +34,7 @@ Copy and conversion pass after the podcast launch and the move to alternating Tu
 
 ## Podcast catalog (v1.3.0, September 17, 2026)
 
-The theme reads the public episode catalog at `https://eaol-episode-catalog.mindovermoney-ai.workers.dev/catalog` for the podcast hub, Archive and homepage. This is a separate service from Neura. It checks approved full releases every five minutes; visible pages refresh every minute. Spotify and Apple show subscription links are active on the podcast hub. Episode-specific links come from the catalog. There are no API keys or private transcripts in the theme. Live theme is v1.4.0 (deploy run 136 from commit 20a79a5); source is v1.4.1 until an approved manual deploy. Committing or pushing does not redeploy it.
+The theme reads the public episode catalog at `https://eaol-episode-catalog.mindovermoney-ai.workers.dev/catalog` for the podcast hub, Archive and homepage. This is a separate service from Neura. It checks approved full releases every five minutes; visible pages refresh every minute. Spotify and Apple show subscription links are active on the podcast hub. Episode-specific links come from the catalog. There are no API keys or private transcripts in the theme. Live theme is v1.4.1 (deploy run 137 from commit 00ab10c, after run 136 shipped v1.4.0). Committing or pushing does not redeploy it. Committing or pushing does not redeploy it.
 
 ## Ghost 6 gotcha: the 100-result cap
 
