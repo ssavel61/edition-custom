@@ -46,9 +46,14 @@ function publicMatch(r, list) {
   return e;
 }
 // Preserve program words and speaker labels; omit old editorial heading and narration placeholders.
+// Two delivered cue formats are accepted, never mixed: speaker-labeled Studio cues
+// ("**HH:MM:SS — Host 1:** text") and unlabeled readable-transcript cues ("[MM:SS] text").
+// Unlabeled deliveries must already be trimmed to the program; the manifest hash pins that exact text.
 export function chunkProgram(source) {
-  const pattern=/^\*\*(\d{2}):(\d{2}):(\d{2}) — (Host [12]):\*\* (.+)$/gm;
-  const cues=[...source.matchAll(pattern)].map(m=>({start:Number(m[1])*3600+Number(m[2])*60+Number(m[3]),text:`${m[4]}: ${m[5]}`}));
+  const labeled=/^\*\*(\d{2}):(\d{2}):(\d{2}) — (Host [12]):\*\* (.+)$/gm;
+  const unlabeled=/^\[(\d{2,3}):(\d{2})\] (.+)$/gm;
+  let cues=[...source.matchAll(labeled)].map(m=>({start:Number(m[1])*3600+Number(m[2])*60+Number(m[3]),text:`${m[4]}: ${m[5]}`}));
+  if(!cues.length) cues=[...source.matchAll(unlabeled)].map(m=>({start:Number(m[1])*60+Number(m[2]),text:m[3].trim()})).filter(c=>!/^\([^)]*\)$/.test(c.text));
   if(!cues.length || cues.length>5000) throw Error('invalid_program');
   const chunks=[]; let text='',start=0, previous=-1;
   for(const cue of cues) {

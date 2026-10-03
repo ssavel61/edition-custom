@@ -132,7 +132,7 @@ The posts stay published — they are accurate history. Instead, `ingest.js` jud
 
 ### Verifying deployed code matches committed code
 
-The Worker deploys manually (`npx wrangler deploy` from `chat-agent/`), so committed and deployed code can drift. Historical baseline: on 7.13.26 commit `795b295` matched Worker `b50594dc` and the 9/9 eval. Current September 19 deployment is Worker `26578599-69ed-4682-be02-0917b8548f88`, including approved episode retrieval and the show directory. Source and deployment must be verified independently; a Git commit does not redeploy the Worker. Re-confirm current deployment/source receipts before further changes.
+The Worker deploys manually (`npx wrangler deploy` from `chat-agent/`), so committed and deployed code can drift. Historical baseline: on 7.13.26 commit `795b295` matched Worker `b50594dc` and the 9/9 eval. Current October 3, 2026 deployment is Worker `f0674732-f98b-49b5-a96d-c818a7b4f654` (commit on this branch adds unlabeled readable-transcript cue support; Episodes 1 and 2 are enabled in the private manifest). The previous version `26578599-69ed-4682-be02-0917b8548f88` (September 19) is the rollback. Source and deployment must be verified independently; a Git commit does not redeploy the Worker. Re-confirm current deployment/source receipts before further changes.
 
 ### Standing gotchas (already documented in this repo, do not relearn)
 
@@ -144,6 +144,6 @@ The Worker deploys manually (`npx wrangler deploy` from `chat-agent/`), so commi
 ### Deferred / parked (do not build unprompted)
 
 - Instant indexing via Ghost publish webhook. `POST /ingest` is authenticated by the `x-ingest-secret` header; Ghost webhooks cannot send custom headers, so this needs a `?token=` query-param path added.
-- Automatic future podcast transcript intake remains deferred. The separately approved September 19 repair enables governed per-episode intake; each new transcript still needs explicit identity, approval, verification and activation.
+- Automatic future podcast transcript intake remains deferred. The separately approved September 19 repair enables governed per-episode intake; each new transcript still needs explicit identity, approval, verification and activation. Since October 3, 2026 the intake also accepts the Cliptool readable transcript (`[MM:SS] text` cues, narration trimmed, no speaker labels), which is how Episode 2 was added; answers from such episodes do not attribute lines to a host. Candidate improvement: have Cliptool emit the trimmed program transcript and a draft manifest entry as a final-materials output.
 - Learning-plans guided mode (Phase 3).
 - Embedding upgrade to Voyage (only if retrieval quality demands it; Bucket C says it does not).
