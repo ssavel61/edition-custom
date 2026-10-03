@@ -1,6 +1,6 @@
 {
   "name": "edition-clean",
-  "version": "1.4.0",
+  "version": "1.4.1",
   "author": { "email": "admin@mindovermoney.ai" },
   "engines": { "ghost": ">=5.0.0" },
   "license": "MIT",

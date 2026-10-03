@@ -5,8 +5,8 @@
     {{#post}}
         {{> "content" width="wide"}}
         {{!-- Closing bands key on the page slug; renaming a slug in Ghost removes its band. --}}
-        {{#match slug "start-here"}}{{> "page-band" form_id="start-here" show_newsletter=true}}{{/match}}
-        {{#match slug "about"}}{{> "page-band" form_id="about" show_newsletter=true}}{{/match}}
+        {{#match slug "start-here"}}{{> "start-here-faq"}}{{> "page-band" form_id="start-here" show_newsletter=true}}{{/match}}
+        {{#match slug "about"}}{{> "person-jsonld"}}{{> "page-band" form_id="about" show_newsletter=true}}{{/match}}
         {{#match slug "welcome"}}{{> "page-band" form_id="welcome" show_newsletter=false}}{{/match}}
     {{/post}}
 
@@ -20,6 +20,14 @@
   .ngw-page-band-heading { font-family: var(--gh-font-heading, var(--font-sans)); font-size: 2.2rem; font-weight: 700; color: #2c353c; margin: 0 0 0.6rem; letter-spacing: -0.02em; }
   .ngw-page-band-sub { font-size: 1.5rem; color: #53626a; line-height: 1.6; margin: 0 0 1.4rem; }
   .ngw-page-band-news .ngw-signup-form { margin: 0; }
+  .ngw-faq { max-width: 720px; margin: 0 auto; padding: 0 1.5rem; }
+  .ngw-faq-inner { border-top: 1px solid #d6e0e3; padding-top: 2.5rem; }
+  .ngw-faq h2 { font-family: var(--gh-font-heading, var(--font-sans)); font-size: 2.2rem; letter-spacing: -0.02em; color: #2c353c; margin: 0 0 1.4rem; }
+  .ngw-faq-list { margin: 0; }
+  .ngw-faq-list dt { font-weight: 700; font-size: 1.6rem; color: #2c353c; margin: 1.4rem 0 0.4rem; }
+  .ngw-faq-list dt:first-child { margin-top: 0; }
+  .ngw-faq-list dd { margin: 0; font-size: 1.5rem; line-height: 1.65; color: #53626a; }
+  .ngw-faq + .ngw-page-band .ngw-page-band-inner { border-top: 0; padding-top: 2rem; }
   @media (max-width: 600px) {
     .ngw-page-band-news { padding: 1.5rem; }
     .ngw-page-band-heading { font-size: 2rem; }
