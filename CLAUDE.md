@@ -21,7 +21,7 @@ An explicitly approved manual run validates with gscan (`--fatal`), zips `editio
 - Bump `edition-clean/package.json` `version` on meaningful theme changes (matches the existing commit history).
 - The `chat-agent/` directory sits *outside* `edition-clean/`, so it is never included in the theme zip.
 
-## Subscribe and follow refresh (v1.4.0 and v1.4.1, live October 3, 2026)
+## Subscribe and follow refresh (v1.4.0 to v1.4.2, live October 3, 2026)
 
 Copy and conversion pass after the podcast launch and the move to alternating Tuesday emails (full NGW issue one week, podcast episode email the next, one Ghost newsletter). Newsletter leads on shared surfaces, podcast second; podcast leads only on the hub.
 
@@ -29,12 +29,13 @@ Copy and conversion pass after the podcast launch and the move to alternating Tu
 - `post.hbs` footer: inline free signup form for anonymous readers (still suppressed by an authored signup card), then the compact follow block for everyone, hidden when the post body already links the show.
 - `page.hbs` renders `partials/page-band.hbs` on the Ghost pages with slugs `start-here`, `about` (newsletter form, or a "You're subscribed" line for members, then the full follow block) and `welcome` (follow block only). Bands key on slugs and disappear silently if a slug is renamed.
 - Header Subscribe opens `#/portal/signup/free` directly. Homepage and hub wording no longer says "every week"; the signup button reads "Subscribe for free"; Neura's greeting mentions the episodes.
-- v1.4.1 adds a footer social row on every page (`partials/site-socials.hbs`: Santosh on LinkedIn, X, GitHub; the show on YouTube, Instagram, TikTok), a plain-language FAQ with FAQPage structured data on Start Here (`partials/start-here-faq.hbs`), Person structured data on About (`partials/person-jsonld.hbs`) and PodcastSeries structured data on the hub (`partials/podcast-jsonld.hbs`). Social URLs are duplicated in `podcast.hbs` host bios and `chat-agent/src/directory.js`; change all three together.
+- v1.4.1 adds a footer social row on every page (`partials/site-socials.hbs`: Santosh on LinkedIn, X, GitHub; the show on Instagram and TikTok; v1.4.2 dropped YouTube from that row because the follow block above it already carries the subscribe link, while the structured data still lists it), a plain-language FAQ with FAQPage structured data on Start Here (`partials/start-here-faq.hbs`), Person structured data on About (`partials/person-jsonld.hbs`) and PodcastSeries structured data on the hub (`partials/podcast-jsonld.hbs`). Social URLs are duplicated in `podcast.hbs` host bios and `chat-agent/src/directory.js`; change all three together.
+- v1.4.2 gives the post CTA box, the page band newsletter box and the follow block (scoped to post footers and page bands) a white fill with a light border and the teal rule, because the old `#eef3f4` fill disappeared against the `#e8eef0` page background. The podcast hub keeps its own boxes.
 - Still owned by Ghost Admin, not the theme: page bodies, site meta, Portal notice, welcome email, the free tier welcome page, `data: page.podcast` on the `/podcast/` route (needed for a real `<title>`), redirects and code injection.
 
 ## Podcast catalog (v1.3.0, September 17, 2026)
 
-The theme reads the public episode catalog at `https://eaol-episode-catalog.mindovermoney-ai.workers.dev/catalog` for the podcast hub, Archive and homepage. This is a separate service from Neura. It checks approved full releases every five minutes; visible pages refresh every minute. Spotify and Apple show subscription links are active on the podcast hub. Episode-specific links come from the catalog. There are no API keys or private transcripts in the theme. Live theme is v1.4.1 (deploy run 137 from commit 00ab10c, after run 136 shipped v1.4.0). Committing or pushing does not redeploy it. Committing or pushing does not redeploy it.
+The theme reads the public episode catalog at `https://eaol-episode-catalog.mindovermoney-ai.workers.dev/catalog` for the podcast hub, Archive and homepage. This is a separate service from Neura. It checks approved full releases every five minutes; visible pages refresh every minute. Spotify and Apple show subscription links are active on the podcast hub. Episode-specific links come from the catalog. There are no API keys or private transcripts in the theme. Live theme is v1.4.2 (deploy run 138 from commit a99a107; runs 136 and 137 shipped v1.4.0 and v1.4.1). Committing or pushing does not redeploy it.
 
 ## Ghost 6 gotcha: the 100-result cap
 
