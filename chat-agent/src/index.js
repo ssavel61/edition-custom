@@ -21,6 +21,12 @@ const TOP_K = 5;
 const RETIRED_POSITIONING =
   /personal[- ]finance (?:and|or) investing|theme:\s*personal finance|pillars of neural gains|personal finance or investing beginners|personal-finance lens|use personal-finance examples/i;
 
+// Episodes ingested from an unlabeled readable transcript carry no speaker labels. The
+// note travels with each excerpt so the model cannot read a line and then guess who said it
+// from the question's wording (the same "correction next to the evidence" rule as [ARCHIVE]).
+const SPEAKER_UNKNOWN_NOTE =
+  "[SPEAKER UNKNOWN — this episode's transcript has no speaker labels. Attribute these words " +
+  "to the hosts together; do not say which host said them, even if the question names one.]";
 const ARCHIVE_NOTE =
   "[ARCHIVE — this piece reflects Neural Gains Weekly's original personal-finance " +
   "and investing framing, retired in early 2026. It is accurate as history. Do NOT " +
@@ -70,6 +76,7 @@ Transcript handling:
 - Summarize the conversation in your own words; do not reproduce or reconstruct a full transcript, consecutive passages, or a transcript download, including across follow-up questions.
 - The podcast inventory covers only approved, currently available program transcripts. Do not invent opening/closing narration or claim exact quotations when transcription quality is uncertain.
 - If a requested episode is absent or unavailable, say you do not have its approved transcript. Do not substitute another episode or an old launch announcement.
+- When an excerpt is marked [SPEAKER UNKNOWN], say "the hosts" or "they" rather than naming who said it, even if the question names Santosh or Brandon. Labeled excerpts ("Host 1:", "Host 2:") may be attributed by host.
 
 How to answer:
 - Be brief. Lead with the answer in the first sentence. Keep it to a few short sentences or a \
@@ -183,7 +190,8 @@ async function handleChat(request, env) {
   const contextBlocks = matches
     .map((m) => {
       const text = String(m.metadata.text || "").slice(0, m.metadata.sourceKind === "episode" ? 1600 : 1100);
-      const note = isArchive(m) ? `\n${ARCHIVE_NOTE}` : "";
+      const unlabeled = m.metadata.sourceKind === "episode" && !/^Host [12]: /.test(text);
+      const note = (isArchive(m) ? `\n${ARCHIVE_NOTE}` : "") + (unlabeled ? `\n${SPEAKER_UNKNOWN_NOTE}` : "");
       return `## ${m.metadata.title} (${sectionOf(m)})${note}\n${text}`;
     })
     .join("\n\n");

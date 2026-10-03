@@ -132,7 +132,7 @@ The posts stay published — they are accurate history. Instead, `ingest.js` jud
 
 ### Verifying deployed code matches committed code
 
-The Worker deploys manually (`npx wrangler deploy` from `chat-agent/`), so committed and deployed code can drift. Historical baseline: on 7.13.26 commit `795b295` matched Worker `b50594dc` and the 9/9 eval. Current October 3, 2026 deployment is Worker `f0674732-f98b-49b5-a96d-c818a7b4f654` (commit 27b7200 adds unlabeled readable-transcript cue support; Episodes 1 and 2 are enabled in the private manifest). The previous version `26578599-69ed-4682-be02-0917b8548f88` (September 19) is the rollback. Source and deployment must be verified independently; a Git commit does not redeploy the Worker. Re-confirm current deployment/source receipts before further changes.
+The Worker deploys manually (`npx wrangler deploy` from `chat-agent/`), so committed and deployed code can drift. Historical baseline: on 7.13.26 commit `795b295` matched Worker `b50594dc` and the 9/9 eval. Current October 3, 2026 deployment is Worker `ec775fb6-7786-4246-a5fc-7f9c8030c942` (commit 27b7200 adds unlabeled readable-transcript cue support, the next commit adds the [SPEAKER UNKNOWN] excerpt note for such episodes; Episodes 1 and 2 are enabled in the private manifest). Earlier versions `f0674732` (same day) and `26578599` (September 19) are rollbacks. Source and deployment must be verified independently; a Git commit does not redeploy the Worker. Re-confirm current deployment/source receipts before further changes.
 
 ### Standing gotchas (already documented in this repo, do not relearn)
 
