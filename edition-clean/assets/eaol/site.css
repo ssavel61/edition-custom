@@ -93,6 +93,7 @@
 .eaol-follow-compact .eaol-follow-heading{font-size:19px}
 .eaol-follow-compact .eaol-follow-intro{font-size:14px;margin-bottom:14px}
 .eaol-follow-compact .eaol-follow-links a{min-height:42px;padding:9px 14px;font-size:13px}
+.ngw-post-follow .eaol-follow,.ngw-page-band .eaol-follow{background:#fff;border:1px solid #d6e0e3;border-top:3px solid #8abfc5}
 .show-cadence{font-size:14px;color:#53626a;margin:12px 0 0!important;letter-spacing:0!important;line-height:1.6!important}
 @media(max-width:600px){.eaol-follow{padding:22px 18px}.eaol-follow-links{flex-direction:column}.eaol-follow-links a{width:100%;white-space:normal;min-height:48px}.eaol-follow-heading{font-size:20px}}
 
