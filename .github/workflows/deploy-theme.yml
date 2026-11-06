@@ -5,11 +5,14 @@ on:
   # Run this workflow only for an explicitly approved production deployment.
   workflow_dispatch:
 
+permissions:
+  contents: read
+
 jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
 
       # Debug: list files so we can see the theme folder in logs
       - name: Show repo structure (debug)
@@ -22,7 +25,7 @@ jobs:
       # Validate theme before deploy (prints human-readable errors if any)
       - name: Validate theme with gscan (prints real errors)
         run: |
-          npx -y gscan@latest --fatal --verbose edition-clean
+          npx -y gscan@6.6.1 --fatal --verbose edition-clean
 
       # Create a zip of the theme folder
       - name: Build theme zip
@@ -33,7 +36,7 @@ jobs:
 
       # Upload the zip to Ghost
       - name: Deploy Ghost Theme
-        uses: TryGhost/action-deploy-theme@v1
+        uses: TryGhost/action-deploy-theme@a0ee1147d15641db25681e54549c4db9a53c2629 # v1
         with:
           api-url: ${{ secrets.GHOST_ADMIN_API_URL }}
           api-key: ${{ secrets.GHOST_ADMIN_API_KEY }}

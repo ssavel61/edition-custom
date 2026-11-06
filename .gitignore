@@ -1,0 +1,14 @@
+# Secrets and local credentials must never reach this public repo.
+.env
+.env.*
+!.env.example
+.dev.vars
+*.pem
+*.key
+client_secret*.json
+tokens.json
+
+# Local tooling
+.wrangler/
+node_modules/
+.DS_Store
