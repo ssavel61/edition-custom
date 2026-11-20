@@ -46,23 +46,36 @@ function publicMatch(r, list) {
   return e;
 }
 // Preserve program words and speaker labels; omit old editorial heading and narration placeholders.
-// Two delivered cue formats are accepted, never mixed: speaker-labeled Studio cues
-// ("**HH:MM:SS — Host 1:** text") and unlabeled readable-transcript cues ("[MM:SS] text").
-// Unlabeled deliveries must already be trimmed to the program; the manifest hash pins that exact text.
+// Three delivered cue formats are accepted, never mixed:
+//   1. role-labeled Studio cues      "**HH:MM:SS — Host 1:** text"
+//   2. named-speaker cues            "[HH:MM:SS.mmm–HH:MM:SS.mmm] **Name:** text"
+//   3. unlabeled readable cues       "[MM:SS] text"
+// Deliveries must already be trimmed to the program; the manifest hash pins that exact text.
+// Each chunk carries `labeled` so answers only attribute words when the delivery named a speaker.
 export function chunkProgram(source) {
-  const labeled=/^\*\*(\d{2}):(\d{2}):(\d{2}) — (Host [12]):\*\* (.+)$/gm;
+  const roles=/^\*\*(\d{2}):(\d{2}):(\d{2}) — (Host [12]):\*\* (.+)$/gm;
+  const named=/^\[(\d{2}):(\d{2}):(\d{2})\.\d{3}–\d{2}:\d{2}:\d{2}\.\d{3}\] \*\*([A-Z][A-Za-z' -]{1,30}):\*\* (.+)$/gm;
   const unlabeled=/^\[(\d{2,3}):(\d{2})\] (.+)$/gm;
-  let cues=[...source.matchAll(labeled)].map(m=>({start:Number(m[1])*3600+Number(m[2])*60+Number(m[3]),text:`${m[4]}: ${m[5]}`}));
-  if(!cues.length) cues=[...source.matchAll(unlabeled)].map(m=>({start:Number(m[1])*60+Number(m[2]),text:m[3].trim()})).filter(c=>!/^\([^)]*\)$/.test(c.text));
+  const at=m=>Number(m[1])*3600+Number(m[2])*60+Number(m[3]);
+  let labeled=true;
+  let cues=[...source.matchAll(roles)].map(m=>({start:at(m),speaker:m[4],body:m[5]}));
+  if(!cues.length) cues=[...source.matchAll(named)].map(m=>({start:at(m),speaker:m[4],body:m[5].replace(/^- /,'').trim()}));
+  if(!cues.length) { labeled=false; cues=[...source.matchAll(unlabeled)].map(m=>({start:Number(m[1])*60+Number(m[2]),speaker:null,body:m[3].trim()})).filter(c=>!/^\([^)]*\)$/.test(c.body)); }
   if(!cues.length || cues.length>5000) throw Error('invalid_program');
-  const chunks=[]; let text='',start=0, previous=-1;
+  const chunks=[]; let text='',start=0, previous=-1, speaker=null;
   for(const cue of cues) {
-    if(cue.start<previous || cue.text.length>1500) throw Error('invalid_cue'); previous=cue.start;
-    if(text && text.length+cue.text.length+1>1500) { chunks.push({text,start}); text=''; }
+    // A leftover "**" means an unnormalized multi-speaker or marker line slipped into the delivery.
+    if(cue.start<previous || !cue.body || cue.body.includes('**')) throw Error('invalid_cue'); previous=cue.start;
+    const line=cue.speaker?`${cue.speaker}: ${cue.body}`:cue.body;
+    if(line.length>1500) throw Error('invalid_cue');
+    // Caption-sized cues from one speaker read as one turn; role-labeled deliveries keep one line per cue.
+    const joins=text && cue.speaker && cue.speaker===speaker && !/^Host [12]$/.test(cue.speaker) && text.length+cue.body.length+1<=1500;
+    if(joins) { text+=' '+cue.body; continue; }
+    if(text && text.length+line.length+1>1500) { chunks.push({text,start,labeled}); text=''; }
     if(!text) start=cue.start;
-    text+=(text?'\n':'')+cue.text;
+    text+=(text?'\n':'')+line; speaker=cue.speaker;
   }
-  if(text) chunks.push({text,start});
+  if(text) chunks.push({text,start,labeled});
   if(chunks.length>256) throw Error('too_many_chunks');
   return chunks;
 }
@@ -90,7 +103,7 @@ export async function ingestEpisode(body, env) {
     if(!Array.isArray(vectors.data) || vectors.data.length!==batch.length || vectors.data.some(v=>v.length!==768 || v.some(x=>!Number.isFinite(x)))) throw Error('invalid_embeddings');
     const result=await env.VECTORIZE.upsert(batch.map((c,j)=>({id:ids(r)[i+j],namespace:namespace(r),values:vectors.data[j],metadata:{
       sourceKind:'episode',episodeId:r.episodeId,transcriptSha256:r.transcriptSha256,chunkSha256:chunkHashes[i+j],
-      text:c.text,start:c.start,type:'Explore AI Out Loud',title:e.title,url:e.platforms.youtube,published_at:e.publishedAt
+      text:c.text,start:c.start,speakerLabeled:c.labeled,type:'Explore AI Out Loud',title:e.title,url:e.platforms.youtube,published_at:e.publishedAt
     }})));
     mutations.push(result.mutationId || 'legacy_upsert');
   }
@@ -117,11 +130,16 @@ export async function verifyEpisode(body,env) {
   return {status:'ready',episodeId:r.episodeId,count:r.chunkCount,coverage:r.coverage};
 }
 export function scopeOf(query) {
-  const topic=/podcast|explore\s+ai\s+out\s+loud|\beaol\b|\bepisode\b/i.test(query);
-  const numeric=query.match(/\b(?:episode|ep)\s*0*(\d{1,3})\b/i);
-  const ordinal=query.match(/\b(first|second|third|fourth|fifth)\s+episode\b/i);
-  const number=numeric?Number(numeric[1]):ordinal?['first','second','third','fourth','fifth'].indexOf(ordinal[1].toLowerCase())+1:null;
-  return {topic,episodeId:number?`ep${String(number).padStart(3,'0')}`:null};
+  // "episode", "episodes", "ep", "eps" and letter-swap typos such as "epsiode"; never words like "epidemic".
+  const word=String.raw`\bep(?:[isode]{4,6}s?|s|\.)?`;
+  const list=new RegExp(word+String.raw`\s*#?\s*(\d{1,3}(?:\s*(?:,|&|and|or|,\s*and)\s*#?\d{1,3}){0,5})\b`,'gi');
+  const numbers=[];
+  for(const m of query.matchAll(list)) for(const n of m[1].match(/\d{1,3}/g)) numbers.push(Number(n));
+  const names=['first','second','third','fourth','fifth','sixth','seventh','eighth','ninth','tenth'];
+  for(const m of query.matchAll(new RegExp(String.raw`\b(`+names.join('|')+String.raw`)\s+`+word.slice(2)+String.raw`\b`,'gi'))) numbers.push(names.indexOf(m[1].toLowerCase())+1);
+  const episodeIds=[...new Set(numbers.filter(n=>n>0).map(n=>`ep${String(n).padStart(3,'0')}`))].slice(0,6);
+  const topic=episodeIds.length>0 || /podcast|explore\s+ai\s+out\s+loud|\beaol\b|\bepisodes?\b/i.test(query);
+  return {topic,episodeId:episodeIds[0]||null,episodeIds};
 }
 export function isDump(query) {
   return /\b(transcript|verbatim|word.for.word|every\s+(?:word|line)|all\s+(?:the\s+)?(?:chunks|excerpts))\b/i.test(query) &&
@@ -150,12 +168,15 @@ export async function episodeContext(query,vector,env) {
     if(ready?.transcriptSha256===r.transcriptSha256 && ready?.count===r.chunkCount) active.push({r,e});
   }
   const catalog=['PODCAST TRANSCRIPTS — approved published program conversations. Opening and closing narration are not covered.',...active.map(({r,e})=>`${r.episodeId}: ${e.title} (${e.publishedAt.slice(0,10)})`)].join('\n');
-  const chosen=scope.episodeId?active.filter(({r})=>r.episodeId===scope.episodeId):active;
+  const chosen=scope.episodeIds.length?active.filter(({r})=>scope.episodeIds.includes(r.episodeId)):active;
   const results=await Promise.all(chosen.map(async({r,e})=>{
     const result=await env.VECTORIZE.query(vector,{namespace:namespace(r),topK:scope.topic?Math.min(50,r.chunkCount):2,returnMetadata:env.VECTORIZE_METADATA_MODE==='all'?'all':true});
     const valid=(result.matches || []).filter(m=>ids(r).includes(m.id) && m.metadata?.episodeId===r.episodeId && m.metadata?.transcriptSha256===r.transcriptSha256)
       .map(m=>({...m,metadata:{...m.metadata,title:e.title,url:e.platforms.youtube,type:'Explore AI Out Loud'}}));
     return scope.topic?rankEpisodeMatches(query,valid):valid;
   }));
-  return {matches:results.flat().sort((a,b)=>b.score-a.score).slice(0,5),catalog,scope};
+  // Several named episodes each keep their own best passages so one episode cannot crowd out another.
+  const several=scope.episodeIds.length>1 && chosen.length>1;
+  const picked=several?results.flatMap(list=>list.slice(0,Math.max(2,Math.floor(8/chosen.length)))):results.flat();
+  return {matches:picked.sort((a,b)=>b.score-a.score).slice(0,several?8:5),catalog,scope};
 }

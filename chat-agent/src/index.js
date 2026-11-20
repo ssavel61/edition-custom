@@ -76,7 +76,7 @@ Transcript handling:
 - Summarize the conversation in your own words; do not reproduce or reconstruct a full transcript, consecutive passages, or a transcript download, including across follow-up questions.
 - The podcast inventory covers only approved, currently available program transcripts. Do not invent opening/closing narration or claim exact quotations when transcription quality is uncertain.
 - If a requested episode is absent or unavailable, say you do not have its approved transcript. Do not substitute another episode or an old launch announcement.
-- When an excerpt is marked [SPEAKER UNKNOWN], say "the hosts" or "they" rather than naming who said it, even if the question names Santosh or Brandon. Labeled excerpts ("Host 1:", "Host 2:") may be attributed by host.
+- When an excerpt is marked [SPEAKER UNKNOWN], say "the hosts" or "they" rather than naming who said it, even if the question names Santosh or Brandon. Labeled excerpts (lines that begin "Host 1:", "Host 2:" or with a speaker\'s name such as "Santosh:") may be attributed to that speaker.
 
 How to answer:
 - Be brief. Lead with the answer in the first sentence. Keep it to a few short sentences or a \
@@ -161,7 +161,7 @@ async function handleChat(request, env) {
     returnMetadata: env.VECTORIZE_METADATA_MODE === "all" ? "all" : true,
   });
   const articles=(result.matches || []).filter(m=>!m.id.startsWith("eaol-") && m.metadata?.sourceKind!=="episode");
-  const matches=[...podcast.matches,...articles].sort((a,b)=>b.score-a.score).slice(0,requestedScope.topic?5:8);
+  const matches=[...podcast.matches,...articles].sort((a,b)=>b.score-a.score).slice(0,8);
   if(requestedScope.topic && !podcast.matches.length) return new Response(singleAnswer("I do not currently have a verified transcript for that episode available to answer from. Please check the podcast page for the released episodes."), {headers:{"content-type":"text/event-stream"}});
 
   // Existing vectors may still carry the old "Newsletter" label; present it as
@@ -190,7 +190,7 @@ async function handleChat(request, env) {
   const contextBlocks = matches
     .map((m) => {
       const text = String(m.metadata.text || "").slice(0, m.metadata.sourceKind === "episode" ? 1600 : 1100);
-      const unlabeled = m.metadata.sourceKind === "episode" && !/^Host [12]: /.test(text);
+      const unlabeled = m.metadata.sourceKind === "episode" && m.metadata.speakerLabeled !== true && !/^Host [12]: /.test(text);
       const note = (isArchive(m) ? `\n${ARCHIVE_NOTE}` : "") + (unlabeled ? `\n${SPEAKER_UNKNOWN_NOTE}` : "");
       return `## ${m.metadata.title} (${sectionOf(m)})${note}\n${text}`;
     })
