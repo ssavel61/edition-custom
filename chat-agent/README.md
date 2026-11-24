@@ -1,8 +1,10 @@
-# Mind Over Money — RAG Chat Backend
+# Neura: the site's question-answering assistant
 
-A Cloudflare Worker that powers the on-site chat agent. It pulls your Ghost
-content, embeds it into a vector database, and answers reader questions with
-Claude Haiku 4.5 — citing and linking the source posts.
+A Cloudflare Worker that powers Neura, the chat assistant on mindovermoney.ai. It
+reads published Ghost content, embeds it into a vector database, and answers
+reader questions with Claude Haiku 4.5, citing and linking the source posts.
+
+How its answers are checked, and what the checks changed, is in [EVALS.md](EVALS.md).
 
 ```
 browser widget ──▶ Worker /chat ──▶ embed question (Workers AI)
@@ -77,7 +79,7 @@ Ghost Admin → Settings → Integrations → your integration → **Add webhook
 
 > Note: Ghost webhooks can't send the `x-ingest-secret` header. Either rely on
 > the daily cron, or add a `?token=` query check to `/ingest` if you want
-> webhook-triggered indexing — ask and I'll wire it up.
+> webhook-triggered indexing. That path is not built.
 
 ## Costs (rough)
 
@@ -91,7 +93,11 @@ and Workers AI. Each chat is a Claude Haiku 4.5 call (~$1 / 1M input,
 |---|---|
 | `wrangler.toml` | Worker config: bindings, vars, cron |
 | `src/index.js` | HTTP routes + streaming chat handler |
-| `src/ingest.js` | Ghost → chunk → embed → Vectorize pipeline |
+| `src/ingest.js` | Ghost → chunk → embed → Vectorize pipeline, plus the archive catalog |
+| `src/episodes.js` | Approved podcast transcripts: identity checks, intake and retrieval |
+| `src/directory.js` | Curated show links, answered without a model call |
+| `test/` | 75 unit tests with mocked providers (`npm test`) |
+| `EVALS.md` | How answers are evaluated and what that changed |
 
 
 ## Approved episode transcripts
