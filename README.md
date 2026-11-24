@@ -25,6 +25,16 @@ Setup steps are in [`chat-agent/README.md`](chat-agent/README.md). Run the tests
 node --test chat-agent/test/*.test.mjs
 ```
 
+## How Neura is evaluated
+
+A fixed set of nine questions, run against the live site, scored 4 of 9 at first and 9 of 9 after two fixes. One "hallucination" turned out to be the model accurately quoting an out-of-date post. The method, the two fixes and the limits of the check are in [`chat-agent/EVALS.md`](chat-agent/EVALS.md).
+
+The 75 unit tests run on every push and pull request through GitHub Actions.
+
+## How this was built
+
+I build with AI coding agents. I design the system, write the specifications and the evaluations, and review what ships; the agents write the code.
+
 ## Deployment
 
 Theme deploys run only through a manually triggered GitHub Actions workflow, so a push never changes the live site. The Worker deploys separately with `npx wrangler deploy`.
